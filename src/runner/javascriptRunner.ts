@@ -1,9 +1,12 @@
+import type { Task } from '../types/task'
+
 type RunResult = {
   success: boolean
-  message: string
+  status:'success'| 'test-failed' | 'execution-console.error'
+  
 }
 
-export function runJavaScript(code: string): RunResult {
+export function runJavaScript(code: string, task: Task): RunResult {
   const products = [
     { name: 'Keyboard', price: 45 },
     { name: 'Mouse', price: 25 },
@@ -19,28 +22,26 @@ export function runJavaScript(code: string): RunResult {
 
     const userResult = executeCode(products)
 
-    const expectedResult = products.filter(
-      (product) => product.price < 50
-    )
+   
 
     const isCorrect =
-      JSON.stringify(userResult) === JSON.stringify(expectedResult)
+      JSON.stringify(userResult) === JSON.stringify(task.expectedResult)
 
     if (isCorrect) {
       return {
         success: true,
-        message: 'All checks passed ✓',
+        status: 'success',
       }
     }
 
     return {
       success: false,
-      message: 'Not quite yet. Check which products should be in result.',
+      status: 'test-failed',
     }
   } catch {
     return {
       success: false,
-      message: 'Your code could not be executed yet. Check the syntax.',
+      status: 'execution-console.error',
     }
   }
 }

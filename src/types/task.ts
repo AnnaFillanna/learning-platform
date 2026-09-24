@@ -12,6 +12,7 @@ export type Difficulty =
   export type LocalizedContent = {
     title: string
     description: string
+    hints: string[]
   }
 
 export type Task = {
@@ -21,6 +22,7 @@ export type Task = {
   topics: string[]
   difficulty: Difficulty
   category: string
-
+expectedResult: unknown
   content: Record<Language, LocalizedContent>
+  starterCode: string
 }
