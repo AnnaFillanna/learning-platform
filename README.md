@@ -1,75 +1,70 @@
-# React + TypeScript + Vite
+# Learning Platform 🚀
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> 🚧 Work in Progress – persönliches Projekt in aktiver Entwicklung.
 
-Currently, two official plugins are available:
+Die **Learning Platform** ist mein eigenes Projekt zur Entwicklung einer interaktiven Lernumgebung für Programmierung.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Die Idee geht über eine klassische Sammlung von Programmieraufgaben hinaus. Ziel ist es, eine Lernumgebung zu entwickeln, die nicht nur Syntax vermittelt, sondern Schritt für Schritt **logisches Denken, Problemlösung und selbstständiges Programmieren** fördert.
 
-## React Compiler
+Nutzer sollen verschiedene Lösungswege kennenlernen, ihre Fähigkeiten systematisch aufbauen und sich von geführten Übungen schrittweise zu komplexeren und praxisnahen Aufgaben entwickeln.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Aktueller Schwerpunkt
 
-## Expanding the ESLint configuration
+Der erste Lernbereich konzentriert sich auf **JavaScript**.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Das Projekt befindet sich noch in einer frühen Entwicklungsphase. Die Architektur, Funktionen und Benutzeroberfläche werden kontinuierlich weiterentwickelt.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Tech Stack
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- React
+- TypeScript
+- Vite
+- CSS
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Geplante Funktionen
 
-```
+- strukturierte Lernpfade für verschiedene Programmiersprachen
+- interaktive Programmieraufgaben
+- unterschiedliche Aufgabentypen zur Entwicklung von Logik und Problemlösung
+- individuelles Fortschritts- und Kompetenztracking
+- Erkennung und gezieltes Training von Wissenslücken
+- mehrsprachige Benutzeroberfläche
+- adaptive Übungen abhängig vom aktuellen Lernstand
+- zwei integrierte Lernassistenten, die Nutzer während des Lernprozesses unterstützen
+- schrittweiser Übergang von geführten Übungen zu selbstständigem Programmieren
+- modular erweiterbare Unterstützung verschiedener Programmiersprachen
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+## Programmiersprachen
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Der erste Lernbereich wird aktuell für **JavaScript** entwickelt.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Die Plattform ist jedoch nicht auf eine einzelne Programmiersprache ausgelegt. 
+Das Lernkonzept soll langfristig auf verschiedene Programmiersprachen und deren jeweilige Besonderheiten übertragbar sein.
 
-```
+Dazu können unter anderem gehören:
+
+- JavaScript
+- TypeScript
+- Python
+- Java
+- C#
+- C++
+- PHP
+- Go
+- Rust
+- Swift
+- Kotlin
+
+Weitere Sprachen können modular ergänzt werden.
+
+## Projektziel
+
+Ziel ist die Entwicklung eines erweiterbaren Learning Systems, das Programmieren nicht nur durch Wiederholung vermittelt.
+
+Die Plattform soll Nutzer dabei unterstützen, algorithmisches Denken, Problemlösung und ein echtes Verständnis für Programmierung zu entwickeln – unabhängig von einer bestimmten Programmiersprache.
+
+Jede Sprache erhält dabei einen eigenen strukturierten Lernpfad mit Themen, Fähigkeiten, Abhängigkeiten und unterschiedlichen Aufgabentypen.
+
+---
+
+Dieses Projekt wird eigenständig konzipiert und entwickelt.
