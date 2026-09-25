@@ -9,13 +9,16 @@ export const translations = {
     continue: "Weiter",
     check: "Prüfen",
     back: "Zurück",
-    success: "Alle Prüfungen bestanden ✓",
+    success: "Aufgabe gelöst ✓",
     testsFailed:
       "Noch nicht ganz. Prüfe, welche Produkte im Ergebnis enthalten sein sollen.",
     executionError:
       "Dein Code konnte noch nicht ausgeführt werden. Prüfe die Syntax.",
       codePlaceholder: 'Schreibe deinen Code hier...',
       next: 'Weiter',
+      hint: 'Hinweis',
+      previousTask: "← Vorherige Aufgabe",
+    
   },
 
   en: {
@@ -28,11 +31,13 @@ export const translations = {
     continue: "Continue",
     check: "Check",
     back: "Back",
-    success: "All checks passed ✓",
+    success: "Task solved ✓",
     testsFailed: "Not quite yet. Check which products should be in the result.",
     executionError: "Your code could not be executed yet. Check the syntax.",
     codePlaceholder: 'Write your code here...',
     next: 'Next',
+    hint: 'Hint',
+    previousTask: "← Previous task",
   },
 
   ru: {
@@ -45,11 +50,13 @@ export const translations = {
     continue: "Продолжить",
     check: "Проверить",
     back: "Назад",
-    success: "Все проверки пройдены ✓",
+    success: "Задание решено ✓",
     testsFailed:
       "Пока не совсем. Проверь, какие товары должны попасть в результат.",
     executionError: "Код пока не удалось выполнить. Проверь синтаксис.",
     codePlaceholder: 'Напиши свой код здесь...',
     next: 'Дальше',
+    hint: 'Подсказка',
+    previousTask: "← Предыдущее задание",
   },
 };
