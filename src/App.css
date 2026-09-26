@@ -1,0 +1,732 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: #f8f8fb;
+  color: #202231;
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+
+button {
+  font: inherit;
+}
+
+.app {
+  min-height: 100vh;
+}
+
+/* HEADER */
+
+.header {
+  width: min(1400px, calc(100% - 64px));
+  margin: 0 auto;
+  padding: 28px 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logoIcon {
+  display: grid;
+  place-items: center;
+
+  width: 48px;
+  height: 48px;
+
+  background: #ffffff;
+  border: 1px solid #e8e8ef;
+  border-radius: 15px;
+
+  font-size: 26px;
+}
+
+.logo h1 {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1;
+}
+
+.logo span {
+  display: block;
+  margin-top: 5px;
+
+  color: #77798a;
+  font-size: 12px;
+}
+
+/* LANGUAGES */
+
+.languageSwitcher {
+  display: flex;
+  gap: 4px;
+
+  padding: 4px;
+
+  background: #ffffff;
+  border: 1px solid #e8e8ef;
+  border-radius: 12px;
+}
+
+.languageSwitcher button {
+  padding: 8px 11px;
+
+  background: transparent;
+  border: 0;
+  border-radius: 9px;
+
+  color: #77798a;
+  cursor: pointer;
+}
+
+.languageSwitcher button.active {
+  background: #202231;
+  color: #ffffff;
+}
+
+/* HOME */
+
+.home {
+  width: min(1400px, calc(100% - 64px));
+  margin: 20px auto 0;
+}
+
+.hero {
+  min-height: 570px;
+  padding: clamp(32px, 5vw, 72px);
+
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr);
+  align-items: center;
+  gap: 60px;
+
+  background: #ffffff;
+  border: 1px solid #ececf2;
+  border-radius: 32px;
+
+  overflow: hidden;
+}
+
+.heroContent {
+  min-width: 0;
+}
+
+.welcome {
+  margin: 0 0 12px;
+
+  color: #6c5ce7;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.hero h2 {
+  max-width: 650px;
+  margin: 0;
+
+  font-size: clamp(38px, 5vw, 68px);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+}
+
+.heroText {
+  margin: 22px 0 32px;
+
+  color: #77798a;
+  font-size: 18px;
+}
+
+/* CAT AREA */
+
+.petArea {
+  min-height: 400px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  background: #f3f1ff;
+  border-radius: 28px;
+}
+
+.petPlaceholder {
+  font-size: clamp(100px, 14vw, 190px);
+}
+
+.petArea p {
+  margin: 10px 0 0;
+
+  color: #656477;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* TABLET */
+/* TRAINING CARD */
+
+.trainingCard {
+  width: min(100%, 560px);
+  padding: 24px;
+
+  background: #f8f8fb;
+  border: 1px solid #e8e8ef;
+  border-radius: 22px;
+}
+
+.trainingCardTop {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.trainingBadge {
+  width: 46px;
+  height: 46px;
+
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+
+  background: #f7df1e;
+  border-radius: 13px;
+
+  color: #202231;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.trainingLabel {
+  margin: 0 0 5px;
+
+  color: #77798a;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.trainingCard h3 {
+  margin: 0;
+
+  font-size: 21px;
+  letter-spacing: -0.02em;
+}
+
+.trainingCard h3 span {
+  color: #aaaabc;
+}
+
+.trainingMeta {
+  margin: 20px 0;
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+
+  color: #77798a;
+  font-size: 14px;
+}
+
+.continueButton {
+  width: 100%;
+  min-height: 50px;
+  padding: 0 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  border: 0;
+  border-radius: 14px;
+
+  background: #6c5ce7;
+  color: #ffffff;
+
+  font-weight: 700;
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+
+.continueButton:hover {
+  background: #5b4bd6;
+  transform: translateY(-1px);
+}
+
+.continueButton:active {
+  transform: translateY(0);
+}
+
+.continueButton span {
+  font-size: 20px;
+}
+
+@media (max-width: 900px) {
+  .header,
+  .home {
+    width: min(100% - 40px, 760px);
+  }
+
+  .hero {
+    min-height: auto;
+
+    grid-template-columns: 1fr;
+    gap: 36px;
+
+    padding: 48px;
+  }
+
+  .petArea {
+    min-height: 300px;
+  }
+}
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+  .header {
+    width: calc(100% - 32px);
+    padding: 18px 0;
+  }
+
+  .logo span {
+    display: none;
+  }
+
+  .logoIcon {
+    width: 42px;
+    height: 42px;
+  }
+
+  .languageSwitcher button {
+    padding: 7px 8px;
+    font-size: 13px;
+  }
+
+  .home {
+    width: calc(100% - 24px);
+    margin-top: 8px;
+  }
+
+  .hero {
+    padding: 28px 20px;
+    gap: 28px;
+
+    border-radius: 24px;
+  }
+
+  .hero h2 {
+    font-size: clamp(34px, 11vw, 48px);
+  }
+
+  .heroText {
+    margin: 16px 0 24px;
+    font-size: 16px;
+  }
+
+  .petArea {
+    min-height: 220px;
+    border-radius: 20px;
+  }
+
+  .petPlaceholder {
+    font-size: 100px;
+  }
+}
+/* =========================
+   TASK SCREEN
+========================= */
+
+.taskPage {
+  width: min(1400px, calc(100% - 64px));
+  margin: 0 auto;
+  padding: 28px 0 60px;
+}
+
+.taskHeader {
+  min-height: 64px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.backButton,
+.previousButton,
+.solutionButton {
+  width: fit-content;
+  padding: 10px 15px;
+  border: 1px solid #e2e2ea;
+  border-radius: 11px;
+  background: #ffffff;
+  color: #555767;
+  cursor: pointer;
+}
+
+.taskBrand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 20px;
+}
+
+.taskBrand span {
+  font-size: 24px;
+}
+
+.taskCounter {
+  justify-self: end;
+  padding: 8px 13px;
+  background: #ffffff;
+  border: 1px solid #e8e8ef;
+  border-radius: 10px;
+  color: #77798a;
+  font-size: 13px;
+}
+
+/* TASK LAYOUT */
+
+.taskLayout {
+  display: grid;
+  grid-template-columns:
+    minmax(300px, 0.75fr)
+    minmax(480px, 1.25fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.taskInfo,
+.codeWorkspace {
+  border-radius: 24px;
+}
+
+.taskInfo {
+  padding: clamp(24px, 3vw, 40px);
+  background: #ffffff;
+  border: 1px solid #e8e8ef;
+}
+
+.taskBreadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #77798a;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.taskBreadcrumb > span {
+  padding: 6px 8px;
+  background: #f7df1e;
+  border-radius: 7px;
+  color: #202231;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.taskInfo h1 {
+  margin: 22px 0 16px;
+  font-size: clamp(32px, 4vw, 48px);
+  letter-spacing: -0.04em;
+}
+
+.taskDescription {
+  margin: 0 0 28px;
+  color: #555767;
+  font-size: 17px;
+  line-height: 1.65;
+}
+
+/* INPUT */
+
+.taskExample,
+.solutionCard {
+  overflow: hidden;
+  background: #f7f7fa;
+  border: 1px solid #e8e8ef;
+  border-radius: 15px;
+}
+
+.taskExampleHeader {
+  padding: 10px 15px;
+  border-bottom: 1px solid #e8e8ef;
+  color: #8a8b99;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.taskExample pre,
+.solutionCard pre {
+  margin: 0;
+  padding: 18px;
+  overflow-x: auto;
+  font-size: 14px;
+}
+
+/* HINTS */
+
+.hintSection {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hintButton {
+  min-height: 46px;
+  padding: 0 16px;
+  align-self: flex-start;
+  background: #f1efff;
+  border: 0;
+  border-radius: 12px;
+  color: #5b4bd6;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.hintButton:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.hintCard {
+  padding: 15px;
+  display: flex;
+  gap: 12px;
+  background: #faf9ff;
+  border: 1px solid #ebe8ff;
+  border-radius: 13px;
+}
+
+.hintCard > span {
+  width: 27px;
+  height: 27px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  background: #e9e5ff;
+  border-radius: 50%;
+  color: #5b4bd6;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.hintCard p {
+  margin: 2px 0 0;
+  line-height: 1.5;
+}
+
+.previousButton {
+  margin-top: 28px;
+}
+
+/* CODE EDITOR */
+
+.codeWorkspace {
+  overflow: hidden;
+  background: #1e202b;
+  border: 1px solid #2d3040;
+}
+
+.editorHeader {
+  height: 54px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  border-bottom: 1px solid #303342;
+  color: #a7a9b8;
+  font-size: 13px;
+}
+
+.editorDots {
+  display: flex;
+  gap: 7px;
+}
+
+.editorDots span {
+  width: 10px;
+  height: 10px;
+  background: #555866;
+  border-radius: 50%;
+}
+
+.codeEditor {
+  width: 100%;
+  min-height: 390px;
+  display: block;
+  padding: 24px;
+  resize: vertical;
+  border: 0;
+  outline: 0;
+  background: #1e202b;
+  color: #f2f2f5;
+  font-family:
+    "SFMono-Regular",
+    Consolas,
+    "Liberation Mono",
+    monospace;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.codeEditor::placeholder {
+  color: #656876;
+}
+
+.editorActions {
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-top: 1px solid #303342;
+}
+
+.editorLanguage {
+  color: #818493;
+  font-size: 12px;
+}
+
+.checkButton,
+.nextButton {
+  min-height: 44px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 11px;
+  background: #6c5ce7;
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.checkButton:hover,
+.nextButton:hover {
+  background: #5b4bd6;
+}
+
+/* RESULT */
+
+.resultPanel {
+  margin: 0 20px 20px;
+  padding: 15px 17px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.resultPanel.success {
+  background: #19372e;
+  color: #a8e6cf;
+}
+
+.resultPanel.error {
+  background: #3c242b;
+  color: #ffaaaa;
+}
+
+.resultPanel pre {
+  margin: 8px 0 0;
+  white-space: pre-wrap;
+}
+
+.generationError {
+  margin: 20px;
+  color: #ffaaaa;
+}
+
+.nextButton {
+  width: calc(100% - 40px);
+  margin: 0 20px 20px;
+}
+
+/* TASK TABLET */
+
+@media (max-width: 950px) {
+  .taskPage {
+    width: min(100% - 40px, 760px);
+  }
+
+  .taskLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .codeEditor {
+    min-height: 350px;
+  }
+}
+
+/* TASK MOBILE */
+
+@media (max-width: 600px) {
+  .taskPage {
+    width: calc(100% - 24px);
+    padding-top: 16px;
+  }
+
+  .taskHeader {
+    margin-bottom: 18px;
+  }
+
+  .taskBrand strong {
+    display: none;
+  }
+
+  .taskInfo {
+    padding: 22px 18px;
+    border-radius: 20px;
+  }
+
+  .taskInfo h1 {
+    font-size: 34px;
+  }
+
+  .taskDescription {
+    font-size: 16px;
+  }
+
+  .codeWorkspace {
+    border-radius: 20px;
+  }
+
+  .codeEditor {
+    min-height: 320px;
+    padding: 18px;
+    font-size: 14px;
+  }
+
+  .editorActions {
+    padding: 14px;
+  }
+
+  .checkButton {
+    min-height: 46px;
+  }
+
+  .resultPanel {
+    margin: 0 14px 14px;
+  }
+
+  .nextButton {
+    width: calc(100% - 28px);
+    margin: 0 14px 14px;
+  }
+}

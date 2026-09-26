@@ -17,29 +17,66 @@ function App() {
     return <TaskScreen onBack={() => setScreen("home")} language={language} />;
   }
   return (
-    <main>
-      <div>
-        <button onClick={() => setLanguage("de")}>DE</button>
-        <button onClick={() => setLanguage("en")}>EN</button>
-        <button onClick={() => setLanguage("ru")}>RU</button>
-      </div>
-      <header>
-        <h1>Pet</h1>
+    <main className="app">
+      <header className="header">
+        <div className="logo">
+          <div className="logoIcon">🐱</div>
+
+          <div>
+            <h1>Pet</h1>
+            <span>Practice. Learn. Grow.</span>
+          </div>
+        </div>
+
+        <div className="languageSwitcher">
+          <button
+            className={language === "de" ? "active" : ""}
+            onClick={() => setLanguage("de")}
+          >
+            DE
+          </button>
+
+          <button
+            className={language === "en" ? "active" : ""}
+            onClick={() => setLanguage("en")}
+          >
+            EN
+          </button>
+
+          <button
+            className={language === "ru" ? "active" : ""}
+            onClick={() => setLanguage("ru")}
+          >
+            RU
+          </button>
+        </div>
       </header>
 
-      <section>
-        <p>{t.welcome}</p>
-        <h2>{t.readyToPractice}</h2>
-      </section>
-      <TrainingCard
-        language="JavaScript"
-        topic="Arrays"
-        tasksCount={5}
-        onContinue={handleContinue}
-        trainingTitle={t.todaysTraining}
-        tasksLabel={t.tasks}
-        continueLabel={t.continue}
-      />
+      <div className="home">
+        <section className="hero">
+          <div className="heroContent">
+            <p className="welcome">{t.welcome}</p>
+
+            <h2>{t.readyToPractice}</h2>
+
+            <TrainingCard
+              language="JavaScript"
+              topic="Arrays"
+              tasksCount={5}
+              onContinue={handleContinue}
+              trainingTitle={t.todaysTraining}
+              tasksLabel={t.tasks}
+              continueLabel={t.continue}
+            />
+          </div>
+
+          <div className="petArea">
+            <div className="petPlaceholder">🐱</div>
+
+            <p>Small steps. Big progress.</p>
+          </div>
+        </section>
+      </div>
     </main>
   );
 }

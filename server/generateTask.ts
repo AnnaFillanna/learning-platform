@@ -23,13 +23,21 @@ Rules:
 - The learner must write the solution themselves.
 - Generate different input data for the exercise.
 - displayCode must show the input data to the learner.
-- starterCode must contain only the beginning of the answer.
+- starterCode must be an empty string.
+- The learner must write the complete solution themselves.
+- Do not force the learner to use a variable named "result".
+- The learner may choose meaningful variable names such as evenNumbers, filteredNumbers, cheapProducts, etc.
 - solution must contain a correct reference solution.
 - expectedResult must exactly match the result of solution.
 - input must contain every variable needed to execute the learner's code.
 - Give exactly 3 short progressive hints.
 - Do not reveal the complete solution in the hints.
 - Provide content in German, English and Russian.
+- Use meaningful variable names in the reference solution.
+- Variable names should describe the value they contain.
+- Avoid generic names such as "result" unless there is a strong reason to use them.
+- Use common real-world JavaScript naming conventions so the learner also learns good variable naming.
+- The learner may use different variable names. Variable names must not affect whether the solution is accepted.
 
 Return ONLY valid JSON with this structure:
 
@@ -40,7 +48,7 @@ Return ONLY valid JSON with this structure:
   "difficulty": "easy",
   "category": "Arrays",
   "displayCode": "const numbers = [...]",
-  "starterCode": "const result = ",
+  "starterCode": "",
   "expectedResult": [],
   "solution": "const result = ...",
   "input": {},
@@ -49,7 +57,7 @@ Return ONLY valid JSON with this structure:
       "title": "",
       "description": "",
       "hints": ["", "", ""]
-    },
+    }
     "en": {
       "title": "",
       "description": "",

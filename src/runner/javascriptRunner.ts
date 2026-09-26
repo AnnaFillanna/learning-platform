@@ -11,12 +11,29 @@ export function runJavaScript(code: string, task: Task): RunResult {
   const inputValues = Object.values(task.input);
 
   try {
-   const executeCode = new Function(
-  ...inputNames,
-  `${code}; return result`
-);
+    const variableMatches = [
+      ...code.matchAll(/\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=/g),
+    ];
 
-const userResult = executeCode(...inputValues);
+    const lastVariable = variableMatches.at(-1)?.[1];
+
+    if (!lastVariable) {
+      return {
+        success: false,
+        status: "execution-console.error",
+        output: "Erstelle zuerst eine Variable mit deinem Ergebnis.",
+      };
+    }
+
+    const executeCode = new Function(
+      ...inputNames,
+      `
+        ${code}
+        return ${lastVariable};
+      `,
+    );
+
+    const userResult = executeCode(...inputValues);
 
     const isCorrect =
       JSON.stringify(userResult) === JSON.stringify(task.expectedResult);
@@ -34,10 +51,11 @@ const userResult = executeCode(...inputValues);
       status: "test-failed",
       output: userResult,
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
       status: "execution-console.error",
+      output: error instanceof Error ? error.message : String(error),
     };
   }
 }
