@@ -16,6 +16,11 @@ type TaskSessionState = {
   visibleHints: number;
   showSolution: boolean;
   output: unknown;
+  expected: unknown;
+  error: {
+    name: string;
+    message: string;
+  } | null;
 };
 
 function formatOutput(value: unknown): string {
@@ -35,6 +40,14 @@ function formatOutput(value: unknown): string {
 
   return JSON.stringify(value);
 }
+
+const trainingPlan = [
+  "practice",
+  "practice",
+  "business",
+  "business",
+  "business",
+] as const;
 
 function TaskScreen({ onBack, language }: TaskScreenProps) {
   const t = translations[language];
@@ -56,10 +69,13 @@ function TaskScreen({ onBack, language }: TaskScreenProps) {
       setIsGenerating(true);
       setGenerationError("");
 
+      const nextTaskIndex = tasks.length;
+
       const generatedTask = await generateTask({
         programmingLanguage: "javascript",
         topic: "js-arrays-filtering",
         difficulty: "easy",
+        taskType: trainingPlan[nextTaskIndex] ?? "business",
       });
 
       setTasks((previousTasks) => {
@@ -92,7 +108,7 @@ function TaskScreen({ onBack, language }: TaskScreenProps) {
   if (!task) {
     return (
       <main>
-        <button onClick={onBack}>← Zurück</button>
+        <button onClick={onBack}> Zurück</button>
 
         {isGenerating && <p>Neue Aufgabe wird vorbereitet...</p>}
 
@@ -110,10 +126,13 @@ function TaskScreen({ onBack, language }: TaskScreenProps) {
   }
   const prefetchNextTask = async () => {
     try {
+      const nextTaskIndex = tasks.length;
+
       const nextTask = await generateTask({
         programmingLanguage: "javascript",
         topic: "js-arrays-filtering",
         difficulty: "easy",
+        taskType: trainingPlan[nextTaskIndex] ?? "business",
       });
 
       setPrefetchedTask(nextTask);
@@ -128,6 +147,8 @@ function TaskScreen({ onBack, language }: TaskScreenProps) {
     visibleHints: 0,
     showSolution: false,
     output: null,
+    expected: null,
+    error: null,
   };
 
   const updateTaskState = (updates: Partial<TaskSessionState>) => {
@@ -139,6 +160,8 @@ function TaskScreen({ onBack, language }: TaskScreenProps) {
         visibleHints: 0,
         showSolution: false,
         output: null,
+        expected: null,
+        error: null,
       };
 
       return {
@@ -157,37 +180,36 @@ function TaskScreen({ onBack, language }: TaskScreenProps) {
   const visibleHints = currentTaskState.visibleHints;
   const showSolution = currentTaskState.showSolution;
   const output = currentTaskState.output;
+  const executionError = currentTaskState.error;
 
   const handleCheck = () => {
     const checkResult = runJavaScript(code, task);
 
     updateTaskState({
       isSolved: false,
+      result: "",
       output: checkResult.output ?? null,
+      expected: checkResult.expected ?? null,
+      error: checkResult.error ?? null,
     });
 
     if (checkResult.status === "success") {
       updateTaskState({
         result: t.success,
         isSolved: true,
-        output: checkResult.output ?? null,
       });
-
       return;
     }
 
     if (checkResult.status === "test-failed") {
       updateTaskState({
         result: t.testsFailed,
-        output: checkResult.output ?? null,
       });
-
       return;
     }
 
     updateTaskState({
       result: t.executionError,
-      output: checkResult.output ?? null,
     });
   };
 
@@ -333,7 +355,6 @@ function TaskScreen({ onBack, language }: TaskScreenProps) {
 
             <span>solution.js</span>
           </div>
-
           <textarea
             className="codeEditor"
             value={code}
@@ -343,13 +364,14 @@ function TaskScreen({ onBack, language }: TaskScreenProps) {
                 isSolved: false,
                 result: "",
                 output: null,
+                expected: null,
+                error: null,
               });
             }}
             placeholder={t.codePlaceholder}
             rows={14}
             spellCheck={false}
           />
-
           <div className="editorActions">
             <span className="editorLanguage">JavaScript</span>
 
@@ -357,19 +379,74 @@ function TaskScreen({ onBack, language }: TaskScreenProps) {
               ▶ {t.check}
             </button>
           </div>
+          <div
+            className={`consoleOutput ${
+              isSolved
+                ? "consoleSuccess"
+                : result || executionError
+                  ? "consoleError"
+                  : ""
+            }`}
+          >
+            <div className="consoleOutputHeader">
+              <span>Console</span>
 
-          {(result || output !== null) && (
-            <div className={`resultPanel ${isSolved ? "success" : "error"}`}>
-              {result && <strong>{result}</strong>}
+              {isSolved && <span className="consoleStatus">✓ Richtig</span>}
 
-              {output !== null && <pre>{`// → ${formatOutput(output)}`}</pre>}
+              {!isSolved && (result || executionError) && (
+                <span className="consoleStatus">✕ Noch nicht richtig</span>
+              )}
             </div>
-          )}
 
+            <div className="consoleLine">
+              <code>console.log(result)</code>
+
+              <span className="consoleArrow">→</span>
+
+              <span className="consoleValue">
+                {executionError
+                  ? "Error"
+                  : output !== null
+                    ? formatOutput(output)
+                    : "Noch kein Ergebnis"}
+              </span>
+            </div>
+
+            {!result && !executionError && (
+              <p className="consoleHint">
+                // Führe deinen Code aus, um das Ergebnis zu sehen.
+              </p>
+            )}
+
+            {isSolved && (
+              <p className="consoleMessage">
+                ✓ Das Ergebnis entspricht der Aufgabe.
+              </p>
+            )}
+
+            {!isSolved && result && !executionError && (
+              <p className="consoleMessage">
+                Das Ergebnis entspricht noch nicht der Aufgabe. Prüfe deinen
+                Code noch einmal.
+              </p>
+            )}
+
+            {executionError && (
+              <div className="consoleErrorDetails">
+                <strong>
+                  {executionError.name}: {executionError.message}
+                </strong>
+
+                <p>
+                  Prüfe die Stelle im Code, an der dieser Wert oder diese
+                  Variable verwendet wird.
+                </p>
+              </div>
+            )}
+          </div>
           {generationError && (
             <p className="generationError">{generationError}</p>
           )}
-
           {isSolved && (
             <button
               className="nextButton"

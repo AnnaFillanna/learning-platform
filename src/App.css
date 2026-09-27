@@ -349,6 +349,100 @@ button {
     font-size: 100px;
   }
 }
+.consoleOutput {
+  margin: 0 20px 20px;
+  overflow: hidden;
+  border: 1px solid #353846;
+  border-radius: 13px;
+  background: #181a23;
+  color: #d8d9e0;
+}
+
+.consoleOutputHeader {
+  min-height: 42px;
+  padding: 0 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid #30333f;
+  color: #8d909e;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.consoleStatus {
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.consoleLine {
+  padding: 17px 15px 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  overflow-x: auto;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.consoleLine code {
+  color: #b9b5ff;
+}
+
+.consoleArrow {
+  color: #656876;
+}
+
+.consoleValue {
+  color: #d8d9e0;
+}
+
+.consoleHint,
+.consoleMessage {
+  margin: 0;
+  padding: 5px 15px 16px;
+  color: #777a88;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.consoleSuccess {
+  border-color: #315f50;
+}
+
+.consoleSuccess .consoleStatus,
+.consoleSuccess .consoleValue,
+.consoleSuccess .consoleMessage {
+  color: #8ed5b9;
+}
+
+.consoleError {
+  border-color: #6b3b45;
+}
+
+.consoleError .consoleStatus,
+.consoleError .consoleValue {
+  color: #ff9da8;
+}
+
+.consoleErrorDetails {
+  margin: 8px 15px 15px;
+  padding: 12px 14px;
+  border-radius: 9px;
+  background: #2d2026;
+  color: #ffb1b9;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.consoleErrorDetails p {
+  margin: 6px 0 0;
+  color: #c9a2a7;
+}
 /* =========================
    TASK SCREEN
 ========================= */
@@ -580,11 +674,7 @@ button {
   outline: 0;
   background: #1e202b;
   color: #f2f2f5;
-  font-family:
-    "SFMono-Regular",
-    Consolas,
-    "Liberation Mono",
-    monospace;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   font-size: 15px;
   line-height: 1.7;
 }

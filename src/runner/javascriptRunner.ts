@@ -2,8 +2,13 @@ import type { Task } from "../types/task";
 
 type RunResult = {
   success: boolean;
-  status: "success" | "test-failed" | "execution-console.error";
+  status: "success" | "test-failed" | "execution-error";
   output?: unknown;
+  expected?: unknown;
+  error?: {
+    name: string;
+    message: string;
+  };
 };
 
 export function runJavaScript(code: string, task: Task): RunResult {
@@ -12,7 +17,9 @@ export function runJavaScript(code: string, task: Task): RunResult {
 
   try {
     const variableMatches = [
-      ...code.matchAll(/\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=/g),
+      ...code.matchAll(
+        /\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=/g,
+      ),
     ];
 
     const lastVariable = variableMatches.at(-1)?.[1];
@@ -20,8 +27,12 @@ export function runJavaScript(code: string, task: Task): RunResult {
     if (!lastVariable) {
       return {
         success: false,
-        status: "execution-console.error",
-        output: "Erstelle zuerst eine Variable mit deinem Ergebnis.",
+        status: "execution-error",
+        expected: task.expectedResult,
+        error: {
+          name: "ResultError",
+          message: "No result variable found.",
+        },
       };
     }
 
@@ -36,13 +47,15 @@ export function runJavaScript(code: string, task: Task): RunResult {
     const userResult = executeCode(...inputValues);
 
     const isCorrect =
-      JSON.stringify(userResult) === JSON.stringify(task.expectedResult);
+      JSON.stringify(userResult) ===
+      JSON.stringify(task.expectedResult);
 
     if (isCorrect) {
       return {
         success: true,
         status: "success",
         output: userResult,
+        expected: task.expectedResult,
       };
     }
 
@@ -50,12 +63,18 @@ export function runJavaScript(code: string, task: Task): RunResult {
       success: false,
       status: "test-failed",
       output: userResult,
+      expected: task.expectedResult,
     };
   } catch (error) {
     return {
       success: false,
-      status: "execution-console.error",
-      output: error instanceof Error ? error.message : String(error),
+      status: "execution-error",
+      expected: task.expectedResult,
+      error: {
+        name: error instanceof Error ? error.name : "Error",
+        message:
+          error instanceof Error ? error.message : String(error),
+      },
     };
   }
 }
