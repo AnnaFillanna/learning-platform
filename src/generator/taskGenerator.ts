@@ -17,8 +17,10 @@ export async function generateTask(
   request: TaskGenerationRequest,
 ): Promise<GeneratedTask & { id: string }> {
   console.log("🚀 Sending generation request:", request);
-
-  const response = await fetch("http://localhost:3001/api/tasks/generate", {
+  const API_URL = import.meta.env.DEV
+    ? "http://localhost:3001/api/tasks/generate"
+    : "/api/tasks/generate";
+  const response = await fetch(API_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
