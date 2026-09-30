@@ -1,6 +1,6 @@
-import crypto from 'node:crypto';
 
-import { generateTask } from '../../server/generateTask';
+import { generateTask } from "../../server/generateTask.js";
+import { randomUUID } from "node:crypto";
 
 export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') {
@@ -25,7 +25,7 @@ export default async function handler(req: any, res: any) {
     });
 
     return res.status(200).json({
-      id: crypto.randomUUID(),
+      id: randomUUID(),
       ...task,
     });
   } catch (error) {
