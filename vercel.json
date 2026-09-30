@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/tasks/generate",
+      "destination": "/api/tasks/generate"
+    }
+  ]
+}
