@@ -1,5 +1,15 @@
 export const translations = {
   de: {
+    learningPathTitle: "Dein JavaScript-Lernweg",
+    blockProgress: "Fortschritt im Lernblock",
+    sessionQuestion: "Wie viel möchtest du heute machen?",
+    sessionScope: "Die Auswahl gilt nur für diese Trainingseinheit.",
+    sessionLabel: "Trainingseinheit",
+    finishSession: "Einheit abschließen",
+    sessionComplete: "Trainingseinheit abgeschlossen",
+    blockContinues: "Dein Lernblock geht in der nächsten Einheit weiter.",
+    backToOverview: "Zur Übersicht",
+
     welcome: "Willkommen zurück!",
     readyToPractice: "Bereit zum Üben?",
     todaysTraining: "Heutiges Training",
@@ -22,6 +32,16 @@ export const translations = {
   },
 
   en: {
+    learningPathTitle: "Your JavaScript learning path",
+    blockProgress: "Learning block progress",
+    sessionQuestion: "How much would you like to do today?",
+    sessionScope: "Your selection applies only to this training session.",
+    sessionLabel: "Training session",
+    finishSession: "Finish session",
+    sessionComplete: "Training session complete",
+    blockContinues: "Continue your learning block in your next session.",
+    backToOverview: "Back to overview",
+
     welcome: "Welcome back!",
     readyToPractice: "Ready to practice?",
     todaysTraining: "Today's training",
@@ -41,6 +61,16 @@ export const translations = {
   },
 
   ru: {
+    learningPathTitle: "Твой путь изучения JavaScript",
+    blockProgress: "Прогресс в учебном блоке",
+    sessionQuestion: "Сколько заданий хочешь выполнить сегодня?",
+    sessionScope: "Выбор относится только к этой тренировке.",
+    sessionLabel: "Тренировка",
+    finishSession: "Завершить тренировку",
+    sessionComplete: "Тренировка завершена",
+    blockContinues: "Учебный блок продолжится в следующей тренировке.",
+    backToOverview: "К обзору",
+
     welcome: "С возвращением!",
     readyToPractice: "Готова потренироваться?",
     todaysTraining: "Сегодняшняя тренировка",

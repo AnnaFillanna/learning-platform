@@ -4,7 +4,10 @@ import { translations } from "../i18n/translations";
 import { runJavaScript } from "../runner/javascriptRunner";
 import type { Task, Language } from "../types/task";
 
+import type { TrainingSession } from "../types/training";
+
 type TaskScreenProps = {
+  session: TrainingSession;
   onBack: () => void;
   language: Language;
 };
@@ -41,9 +44,10 @@ function formatOutput(value: unknown): string {
   return JSON.stringify(value);
 }
 
-function TaskScreen({ onBack, language }: TaskScreenProps) {
+function TaskScreen({ onBack, language, session }: TaskScreenProps) {
   const t = translations[language];
 
+  const [sessionComplete, setSessionComplete] = useState(false);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
 
@@ -78,7 +82,7 @@ function TaskScreen({ onBack, language }: TaskScreenProps) {
   }, [loadTask]);
 
   const generateNewTask = async () => {
-    if (isGenerating) return;
+    if (isGenerating || tasks.length >= session.taskCount) return;
     const nextTaskIndex = tasks.length;
     setIsGenerating(true);
     setGenerationError("");
@@ -86,7 +90,9 @@ function TaskScreen({ onBack, language }: TaskScreenProps) {
       const nextTask = await loadTask(nextTaskIndex);
       setTasks((previousTasks) => [...previousTasks, nextTask]);
       setCurrentTaskIndex(nextTaskIndex);
-      void loadTask(nextTaskIndex + 1).catch(() => {});
+      if (nextTaskIndex + 1 < session.taskCount) {
+        void loadTask(nextTaskIndex + 1).catch(() => {});
+      }
     } catch {
       setGenerationError(
         "Die Aufgabe konnte nicht generiert werden. Bitte versuche es erneut.",
@@ -95,6 +101,20 @@ function TaskScreen({ onBack, language }: TaskScreenProps) {
       setIsGenerating(false);
     }
   };
+
+  if (sessionComplete) {
+    return (
+      <main className="taskPage">
+        <section className="trainingCard sessionComplete" aria-labelledby="session-complete-title">
+          <p className="trainingLabel">{t.sessionLabel}</p>
+          <h1 id="session-complete-title">{t.sessionComplete}</h1>
+          <p>{session.taskCount} {t.tasks} ✓</p>
+          <p className="sessionNote">{t.blockContinues}</p>
+          <button className="continueButton" onClick={onBack}>{t.backToOverview}</button>
+        </section>
+      </main>
+    );
+  }
 
   if (!task) {
     return (
@@ -201,7 +221,12 @@ function TaskScreen({ onBack, language }: TaskScreenProps) {
   };
 
   const handleNext = async () => {
-    if (!isSolved) {
+    if (!isSolved || isGenerating) {
+      return;
+    }
+
+    if (currentTaskIndex + 1 >= session.taskCount) {
+      setSessionComplete(true);
       return;
     }
 
@@ -226,7 +251,7 @@ function TaskScreen({ onBack, language }: TaskScreenProps) {
           <strong>Pet</strong>
         </div>
 
-        <div className="taskCounter">{currentTaskIndex + 1} / 5</div>
+        <div className="taskCounter">{t.sessionLabel} · {currentTaskIndex + 1} / {session.taskCount}</div>
       </header>
 
       <div className="taskLayout">
@@ -411,7 +436,9 @@ function TaskScreen({ onBack, language }: TaskScreenProps) {
             >
               {isGenerating
                 ? "Neue Aufgabe wird vorbereitet..."
-                : `${t.next} →`}
+                : currentTaskIndex + 1 === session.taskCount
+                  ? `${t.finishSession} ✓`
+                  : `${t.next} →`}
             </button>
           )}
         </section>
