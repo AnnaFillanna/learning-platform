@@ -13,7 +13,7 @@ app.use(express.json());
 app.post("/api/tasks/generate", async (req, res) => {
     console.log("🐱 Generate request received:", req.body);
   try {
-    const { programmingLanguage, topic, difficulty } = req.body;
+    const { programmingLanguage, topic, difficulty, taskType } = req.body;
 
     if (!programmingLanguage || !topic || !difficulty) {
       return res.status(400).json({
@@ -25,6 +25,7 @@ app.post("/api/tasks/generate", async (req, res) => {
       programmingLanguage,
       topic,
       difficulty,
+      taskType,
     });
 
     return res.json({

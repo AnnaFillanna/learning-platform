@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { generateTask } from "../generator/taskGenerator";
+import { createTaskLoader } from "../generator/taskLoader";
 import { translations } from "../i18n/translations";
 import { runJavaScript } from "../runner/javascriptRunner";
 import type { Task, Language } from "../types/task";
@@ -41,14 +41,6 @@ function formatOutput(value: unknown): string {
   return JSON.stringify(value);
 }
 
-const trainingPlan = [
-  "practice",
-  "practice",
-  "business",
-  "business",
-  "business",
-] as const;
-
 function TaskScreen({ onBack, language }: TaskScreenProps) {
   const t = translations[language];
 
@@ -63,31 +55,39 @@ function TaskScreen({ onBack, language }: TaskScreenProps) {
   >({});
 
   const task = tasks[currentTaskIndex];
-  const [prefetchedTask, setPrefetchedTask] = useState<Task | null>(null);
+  const [loadTask] = useState(createTaskLoader);
+
+  useEffect(() => {
+    let active = true;
+    loadTask(0).then(
+      (firstTask) => {
+        if (!active) return;
+        setTasks([firstTask]);
+        setIsGenerating(false);
+        void loadTask(1).catch(() => {});
+      },
+      () => {
+        if (!active) return;
+        setGenerationError(
+          "Die Aufgabe konnte nicht generiert werden. Bitte versuche es erneut.",
+        );
+        setIsGenerating(false);
+      },
+    );
+    return () => { active = false; };
+  }, [loadTask]);
+
   const generateNewTask = async () => {
+    if (isGenerating) return;
+    const nextTaskIndex = tasks.length;
+    setIsGenerating(true);
+    setGenerationError("");
     try {
-      setIsGenerating(true);
-      setGenerationError("");
-
-      const nextTaskIndex = tasks.length;
-
-      const generatedTask = await generateTask({
-        programmingLanguage: "javascript",
-        topic: "js-arrays-filtering",
-        difficulty: "easy",
-        taskType: trainingPlan[nextTaskIndex] ?? "business",
-      });
-
-      setTasks((previousTasks) => {
-        const newTasks = [...previousTasks, generatedTask];
-
-        setCurrentTaskIndex(newTasks.length - 1);
-
-        return newTasks;
-      });
-    } catch (error) {
-      console.error(error);
-
+      const nextTask = await loadTask(nextTaskIndex);
+      setTasks((previousTasks) => [...previousTasks, nextTask]);
+      setCurrentTaskIndex(nextTaskIndex);
+      void loadTask(nextTaskIndex + 1).catch(() => {});
+    } catch {
       setGenerationError(
         "Die Aufgabe konnte nicht generiert werden. Bitte versuche es erneut.",
       );
@@ -96,50 +96,23 @@ function TaskScreen({ onBack, language }: TaskScreenProps) {
     }
   };
 
-  useEffect(() => {
-    const startTraining = async () => {
-      await generateNewTask();
-      void prefetchNextTask();
-    };
-
-    void startTraining();
-  }, []);
-
   if (!task) {
     return (
-      <main>
-        <button onClick={onBack}> Zurück</button>
-
-        {isGenerating && <p>Neue Aufgabe wird vorbereitet...</p>}
-
+      <main className="taskPage">
+        <button className="backButton" onClick={onBack}>← Zurück</button>
+        <div role="status" aria-live="polite">
+          {isGenerating && <p>Neue Aufgabe wird vorbereitet...</p>}
+          {generationError && <p>{generationError}</p>}
+        </div>
         {generationError && (
-          <>
-            <p>{generationError}</p>
-
-            <button onClick={() => void generateNewTask()}>
-              Erneut versuchen
-            </button>
-          </>
+          <button className="nextButton" disabled={isGenerating}
+            onClick={() => void generateNewTask()}>
+            Erneut versuchen
+          </button>
         )}
       </main>
     );
   }
-  const prefetchNextTask = async () => {
-    try {
-      const nextTaskIndex = tasks.length;
-
-      const nextTask = await generateTask({
-        programmingLanguage: "javascript",
-        topic: "js-arrays-filtering",
-        difficulty: "easy",
-        taskType: trainingPlan[nextTaskIndex] ?? "business",
-      });
-
-      setPrefetchedTask(nextTask);
-    } catch (error) {
-      console.error("Prefetch failed:", error);
-    }
-  };
   const currentTaskState = taskStates[task.id] ?? {
     code: task.starterCode,
     result: "",
@@ -238,24 +211,7 @@ function TaskScreen({ onBack, language }: TaskScreenProps) {
       return;
     }
 
-    // Wenn die KI die nächste Aufgabe bereits vorbeireitet hat
-    if (prefetchedTask) {
-      setTasks((previousTasks) => [...previousTasks, prefetchedTask]);
-      setCurrentTaskIndex((previousIndex) => previousIndex + 1);
-      setPrefetchedTask(null);
-
-      // Während der Benutzer die neue Aufgabe löst,
-      // wir neue bereits generiert
-      void prefetchNextTask();
-
-      return;
-    }
-
-    // Wenn der Benutzer schneller als die KI war
     await generateNewTask();
-
-    // und es wird die neue Aufgabe wieder generiert
-    void prefetchNextTask();
   };
 
   return (

@@ -8,7 +8,7 @@ type TaskType =
   | "mixed"
   | "edge-case";
 
-type GenerateTaskRequest = {
+export type GenerateTaskRequest = {
   programmingLanguage: "javascript";
   topic: string;
   difficulty: "easy" | "medium" | "hard";
@@ -133,7 +133,7 @@ Return ONLY valid JSON with this structure:
       "title": "",
       "description": "",
       "hints": ["", "", ""]
-    }
+    },
     "en": {
       "title": "",
       "description": "",
