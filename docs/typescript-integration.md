@@ -1,177 +1,106 @@
-# TypeScript — этап 2: подключение к приложению
+# Aufgabenprüfung und Lernfortschritt
 
-Изменения подготовлены без нового коммита и без push. База Git-копии —
-`f06e1e3`. Исходный проект `/Users/annafilippi/PET/pet` не изменён.
-Актуальная рабочая Git-копия: `pet-typescript-publish`; проверенная копия
-с установленными зависимостями: `pet-typescript`.
+## Ablauf
 
-## Реализовано
+1. Die Oberfläche lädt den TypeScript-Katalog über `/api/learning`.
+2. Die Auswahl prüft die Voraussetzungen gegen den aktuellen Lernstand.
+3. Der gemeinsame `TaskScreen` zeigt Editor, Aufgabeninhalt und sichtbare Tests.
+4. Der Server prüft eingereichten Code und Typverträge mit dem TypeScript-Compiler.
+5. Nach erfolgreicher Kompilierung führt der Browser die Laufzeitprüfungen aus.
+6. Das Ergebnis wird als Attempt gespeichert. Daraus entstehen Progress und
+   die Auswahl der nächsten geeigneten Aufgabe.
 
-- Выбор JavaScript / TypeScript в существующем приложении.
-- Обзор 18 TS-заданий и всех 26 разделов карты (216 навыков/поднавыков).
-- Готовность задания определяется графом prerequisites. Предварительные знания
-  можно отметить отдельно; самооценка не превращается в mastery.
-- TypeScript использует общий TaskScreen, прежние стили, подсказки, редактор,
-  историю заданий внутри сессии и размеры сессии 5/10/15.
-- Если подходящие задания заканчиваются раньше выбранного размера сессии,
-  отображается фактическое число решённых задач и переход к обзору.
-- Видимые тесты доступны в раскрывающемся блоке. Исходный TS-каталог,
-  эталонные решения и hiddenTests не импортируются в клиентское приложение.
-- API `/api/learning`: каталог без solution/hiddenTests; отдельный запрос
-  решения; проверка пользовательского TypeScript.
-- Строгая компиляция и положительные/отрицательные type contracts работают
-  на сервере. Пользовательский JavaScript на сервере не выполняется.
-- Runtime-проверки передаются после компиляции в изолированный iframe с Worker.
-  Iframe не получает allow-same-origin; CSP запрещает сетевые подключения.
-  Время выполнения ограничено двумя секундами, сообщения сверяются по iframe
-  и случайному nonce. По завершении iframe и обработчики удаляются.
-- Если среда выполнения не запустилась или API недоступен, не записывается
-  ложная неуспешная попытка ученика. Тайм-аут после запуска считается ошибкой
-  выполнения кода.
-- Решение запрашивается только по кнопке после открытия подсказок.
-- Attempt сохраняется в прежнем ключе `pet-attempts`. Старые записи JS
-  поддерживаются, новый id защищает от повторной записи одной попытки.
-- Progress восстанавливается из Attempts после перезагрузки. Повреждённое или
-  недоступное хранилище обрабатывается явно. В случае ошибки записи UI сообщает
-  о ней и не продолжает TS-сессию с несохранённым результатом.
-- Следующее TS-задание выбирается после сохранения актуального результата;
-  существующий JS-prefetch остаётся прежним.
+Sitzungen umfassen bis zu 5, 10 oder 15 Aufgaben. Sind vorher keine geeigneten
+Aufgaben mehr verfügbar, endet die Sitzung mit der tatsächlichen Anzahl gelöster
+Aufgaben. Der bestehende JavaScript-Loader behält seinen Prefetch-Ablauf;
+TypeScript wählt erst nach dem aktuellen Ergebnis die nächste Aufgabe.
 
-## Прогресс и повторение
+## API und Aufgabenansicht
 
-Три разных состояния не смешиваются:
+`api/learning.ts` verwendet denselben Handler wie die lokale Vite-Anbindung.
+Die POST-Aktionen sind:
 
-1. `placementSkillIds`: пользователь сообщил, что уже знаком с темой.
-2. `practicedSkillIds`: есть успешное упражнение без просмотра решения.
-3. `masteredSkillIds`: выполнена политика освоения по каждому dimension.
+| Aktion | Eingabe | Antwort |
+| --- | --- | --- |
+| `catalog` | Keine weiteren Felder | Aufgaben ohne `solution` und `hiddenTests` |
+| `check` | `taskId`, `code` | Diagnosen oder ein vorbereitetes Laufzeitprüfprogramm |
+| `solution` | `taskId` | Die Referenzlösung der Aufgabe |
 
-Первые два состояния дают доступ к дальнейшей практике, но не повышают счётчик
-освоенных навыков. В каждом dimension для mastery нужны самостоятельные успехи
-без подсказок и просмотра решения на independent / mixed / transfer / delayed
-стадиях: минимум четыре разных задачи, три контекста и действительно
-отложенная попытка через семь дней или позже. Последняя неуспешная оценка этого
-dimension не позволяет сохранить mastery. Сто повторов одного задания не
-заменяют разнообразие evidence.
+Die Oberfläche zeigt Hinweise schrittweise und bietet die Lösung nach dem
+Öffnen aller Hinweise an. Diese Reihenfolge ist ein Lernablauf im UI, keine
+serverseitige Zugriffssperre für die Lösungs-API.
 
-Повторение становится доступно через семь дней после последнего успеха;
-новый успех переносит срок. Это первоначальная консервативная политика, а не
-переписывание Continue Algorithm или обещание mastery по всему стартовому набору.
-Нынешние 18 заданий не обеспечивают все стадии и dimensions для каждого навыка.
+Die drei Sprachen DE/EN/RU teilen sich Geschäfts- und Codedaten. Übersetzt werden
+Aufgabenbeschreibung, Hinweise und Oberflächentexte. Compilermeldungen behalten
+die Ausgabe des TypeScript-Compilers.
 
-## Проверка решений и её границы
+## TypeScript-Prüfung
 
-Проверяющий сервер использует настоящий TypeScript Compiler API, ES2022,
-strict=true. Запрещены внешние imports/references и директивы подавления ошибок
-в пользовательском коде; размер кода ограничен 20 000 символами. Это ограничения
-именно текущих самостоятельных стартовых упражнений, а не всей Skill Map:
-для будущих заданий на Modules/React понадобятся другие компиляторные среды.
+`server/typescriptCheck.ts` prüft mit `strict=true` und Ziel ES2022. Neben
+positiven Typverträgen gibt es negative Tests mit `@ts-expect-error` in den
+vertrauenswürdigen Prüfdaten. Solche Compiler-Unterdrückungsdirektiven sind in
+Benutzereingaben nicht zulässig.
 
-Runtime-код проверок передаётся браузеру только при проверке решения. В UI
-скрытые проверки не отображаются, но их можно исследовать через инструменты
-разработчика. Эта реализация предназначена для персональной практики и не
-обеспечивает секретность тестов или защиту от мошенничества на экзамене.
-Строгие типовые контракты остаются на сервере, их диагностические детали
-за пределами пользовательского кода не раскрываются.
+Die aktuellen Starteraufgaben erlauben maximal 20.000 Zeichen und keine externen
+Imports oder Dateireferenzen. Künftige Aufgaben auf Module oder React benötigen
+eine dafür erweiterte Compilerumgebung. Diagnosen aus versteckten Typverträgen
+werden allgemein formuliert; Diagnosen im eingereichten Code enthalten Positionen.
 
-Проверки компилятора синхронны. Перед многопользовательским публичным запуском
-нужны ограничения нагрузки и отдельная изоляция/ресурсные лимиты компилятора.
-Runtime timeout не является лимитом времени компилятора.
+Benutzercode wird auf dem Server kompiliert, aber dort nicht ausgeführt.
+Laufzeitprüfungen verwenden einen iframe mit `sandbox="allow-scripts"` und einem
+Worker. Eine Content Security Policy untersagt Netzwerkverbindungen. Nachrichten
+werden anhand des iframe-Absenders und eines zufälligen nonce geprüft. Die
+vorgesehene Laufzeitgrenze beträgt zwei Sekunden.
 
-## Локальный запуск
+Startet die Ausführungsumgebung nicht oder ist die API nicht erreichbar, wird
+keine falsche Fehlversuchsaufzeichnung erzeugt. Ein Timeout nach Worker-Start
+wird als Laufzeitfehler gewertet. Bei Abschluss werden iframe und Listener entfernt.
 
-В проверенной рабочей копии с установленными зависимостями:
+**Prüfgrenze:** Der Worker-/CSP-Ablauf wurde noch nicht in einem realen Browser
+end-to-end bestätigt. Die vorhandenen Lifecycle-Tests verwenden eine DOM-Nachbildung.
 
-```sh
-npm run client
-```
+## Speicherung und mastery
 
-Vite обслуживает новый API TypeScript на том же адресе, что и приложение.
-Для TS не нужны OpenAI API key, внешние вызовы AI или прежний express-сервер.
-На Vercel используется `api/learning.ts`; TypeScript перенесён в runtime
- dependencies, а стандартные `.d.ts`-библиотеки включены в serverless function.
+Attempts verwenden den bestehenden Local-Storage-Schlüssel `pet-attempts`.
+Ältere JavaScript-Einträge bleiben lesbar. Neue Attempt-IDs vermeiden doppelte
+Aufzeichnungen derselben Übermittlung. Selbsteinschätzungen liegen separat in
+`pet-placement-v1`. Fehlerhafte oder nicht verfügbare Speicherung wird behandelt
+und im UI gemeldet.
 
-Существующий JS-путь остаётся с его прежним генератором и API. Его локальный
-сервер по-прежнему требует собственного окружения; в исходном package.json
-не были перечислены используемые им express/cors/tsx. В этом этапе зависимости
-и конфигурация старого AI-сервера не изменялись.
+Der Fortschritt wird aus den gespeicherten Attempts abgeleitet. Drei Zustände
+bleiben getrennt:
 
-## Проверки и ограничения среды
+- `placementSkillIds`: selbst angegebene Vorkenntnisse;
+- `practicedSkillIds`: erfolgreich geübt, ohne eine Lösung anzusehen;
+- `masteredSkillIds`: Anforderungen an Beherrschung pro Dimension erfüllt.
 
-- 78 автоматических тестов прошли: 42 прежних + 36 новых.
-- Typecheck проходит для клиента, Vite config и нового серверного/API-кода.
-- Lint и production build проходят.
-- package-lock согласован с package.json.
-- Проверена программная цепочка: public catalog → prerequisites → check →
-  persisted Attempt → Progress → Next Task, включая повторное чтение хранилища.
-- Все 18 эталонных решений проходят новый серверный checker и runtime payload.
-- Проверены неправильные типы, подавление ошибок, oversized input, отсутствие
-  импортов, отказ хранилища, legacy JS attempts, повторение и mastery.
-- Sandbox lifecycle тестируется с моделью DOM: origin/nonce filtering,
-  очистка ресурсов, startup failure, timeout, экранирование HTML. Это **не**
-  реальный браузерный тест Worker/CSP.
+Vorkenntnisse und Übungserfahrung können weitere Praxis ermöglichen, erhöhen
+aber nicht den mastery-Zähler. Für mastery verlangt jede relevante Dimension
+Erfolge ohne Hinweise und ohne Lösungsansicht in independent, mixed, transfer
+und delayed practice. Erforderlich sind mindestens vier verschiedene Aufgaben,
+drei Kontexte und eine Wiederholung mit mindestens sieben Tagen Abstand.
+Die jüngste Bewertung der Dimension muss erfolgreich sein.
 
-Полный браузерный end-to-end прогон остаётся неподтверждённым: среда запретила
-прослушивание localhost (EPERM), а браузерная политика не разрешила открыть
-локальный file://-стенд. Обход этих ограничений не выполнялся. Проверку UI,
-реального запуска Worker и исполнения CSP необходимо выполнить в обычном
-локальном браузере перед публикацией. Deployment на Vercel не проверялся.
+Wiederholung wird sieben Tage nach dem letzten Erfolg fällig. Ein weiterer
+Erfolg verschiebt diesen Termin. Diese anfängliche Politik verhindert, dass
+viele identische Übungen Beherrschung vortäuschen. Der kleine Aufgabenbestand
+deckt noch nicht alle notwendigen Stadien und Dimensionen jedes Skills ab.
 
-## Ручной сценарий для следующей проверки
+## Betrieb und Grenzen
 
-1. Запустить приложение и выбрать TypeScript / RU (также проверить DE и EN).
-2. Открыть первое задание. Без prerequisites старт должен быть заблокирован.
-   Отметить только действительно знакомые предварительные темы.
-3. Начать сессию и отправить неправильный ответ, затем правильный
-   `const result = "number";`. Проверить ошибки/успех и наличие Attempt.
-4. Перезагрузить страницу, вернуться к TS и проверить сохранение прогресса.
-   Успех одной задачи не должен увеличить mastery.
-5. Проверить readonly/interface-задачу: корректное поведение с неверными типами
-   не должно приниматься. Видимые тесты и подсказки должны раскрываться отдельно.
-6. В runtime-задаче добавить бесконечный цикл: проверка должна завершиться
-   ошибкой времени, а страница остаться отзывчивой.
-7. Пройти все подсказки и открыть решение: последующая попытка не должна
-   учитываться как самостоятельное освоение.
-8. Вернуться к JavaScript и проверить прежний сценарий генерации, проверки,
-   подсказок и перехода к следующему заданию при доступном JS API.
+Lokal stellt `npm run client` neben der Oberfläche auch die TypeScript-API bereit.
+Die geplante Vercel-Funktion benötigt TypeScript zur Laufzeit; ihre Standardbibliotheken
+sind über `vercel.json` eingeschlossen. Das Deployment ist noch nicht verifiziert.
 
-Новые коммиты, push и публикация допускаются только по отдельной команде пользователя.
+Laufzeittests gelangen erst bei einer Prüfung zum Browser. Sie erscheinen nicht
+im Aufgaben-UI, sind aber über Entwicklertools einsehbar. Die Anwendung ist für
+persönliches Üben ausgelegt, nicht für Prüfungen mit geheimen Testfällen oder
+manipulationssicherer Bewertung.
 
-## Файлы второго этапа
+Der Compiler arbeitet synchron. Für einen öffentlichen Mehrbenutzerbetrieb fehlen
+separate Compiler-Isolation, Ressourcenlimits und Lastbegrenzung. Die Laufzeitgrenze
+des Workers begrenzt nicht die Dauer der Kompilierung. Auch lokale Fortschrittsdaten
+sind keine serverseitig bestätigten Leistungsnachweise.
 
-Созданы:
-
-- `api/learning.ts`
-- `docs/typescript-integration.md`
-- `server/learningHandler.ts`
-- `server/typescriptCheck.ts`
-- `src/components/TypeScriptOverview.tsx`
-- `src/generator/learningClient.ts`
-- `src/generator/learningLoader.ts`
-- `src/i18n/learningTranslations.ts`
-- `src/progress/learningProgress.ts`
-- `src/runner/typescriptRunner.ts`
-- `src/types/learnerTask.ts`
-- `tests/learning-api.test.mjs`
-- `tests/learning-progress.test.mjs`
-- `tests/learning-session.test.mjs`
-- `tests/sandbox-lifecycle.test.mjs`
-- `tsconfig.learning.json`
-
-Изменены:
-
-- `docs/implementation-report.md`
-- `docs/typescript-foundation.md`
-- `package-lock.json`
-- `package.json`
-- `src/App.css`
-- `src/App.tsx`
-- `src/components/TaskScreen.tsx`
-- `src/learning/nextTask.ts`
-- `src/progress/attemptStorage.ts`
-- `src/runner/javascriptRunner.ts`
-- `src/types/attempt.ts`
-- `src/types/learning.ts`
-- `src/types/training.ts`
-- `tests/helpers/load-typescript.mjs`
-- `vercel.json`
-- `vite.config.ts`
+Die [Validierungsübersicht](implementation-report.md) beschreibt die bereits
+geprüften Teile und den noch offenen Browser-Prüfablauf.

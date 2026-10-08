@@ -1,47 +1,71 @@
-# Результаты этапа 1
+# Validierung und offene Prüfungen
 
-> Исторический отчёт первого этапа. Актуальное подключение приложения описано в [typescript-integration.md](typescript-integration.md).
+## Dokumentierter Prüfstand
 
-Проверки: **42/42 tests, typecheck, lint, build — успешно**.
-Добавлено 36 тестов; 6 прежних тестов сохранены и проходят.
+Der zuletzt ausgeführte Prüfstand umfasst **78 erfolgreiche automatisierte Tests**.
+Typecheck, ESLint und Production Build waren ebenfalls erfolgreich. Die Angaben
+beschreiben die Entwicklungsversion; sie sind keine Bestätigung eines produktiven
+Deployments oder eines vollständigen Browser-End-to-End-Tests.
 
-TypeScript: **26 sections, 162 skills, 54 subskills (216 узлов)**.
-Стартовые задания: **18**, локализация RU/DE/EN.
+```sh
+npm test
+npm run typecheck
+npm run lint
+npm run build
+```
 
-TypeScript пока не подключён к экрану тренировки. Полная граница этапа и план
-продолжения описаны в [typescript-foundation.md](typescript-foundation.md).
+Typecheck umfasst die Anwendung, die Vite-Konfiguration und den neuen
+TypeScript-API-/Compiler-Code. Die ältere JavaScript-Serverkonfiguration ist
+damit nicht vollständig geprüft.
 
-## Созданные файлы
+## Automatisch abgedeckt
 
-- `docs/typescript-foundation.md`
-- `src/learning/catalog.ts`
-- `src/learning/nextTask.ts`
-- `src/learning/validateTasks.ts`
-- `src/skills/javascriptSkillMap.ts`
-- `src/skills/registry.ts`
-- `src/skills/typescriptSkillMap.ts`
-- `src/tasks/typescriptTasks.ts`
-- `src/types/learning.ts`
-- `src/types/skill.ts`
-- `tests/helpers/check-typescript-task.mjs`
-- `tests/helpers/load-typescript.mjs`
-- `tests/javascript-regression.test.mjs`
-- `tests/next-task.test.mjs`
-- `tests/skill-map.test.mjs`
-- `tests/typescript-tasks.test.mjs`
-- `docs/implementation-report.md`
+| Bereich | Prüfumfang |
+| --- | --- |
+| Skill Map | 26 TS-Bereiche, 216 IDs, Hierarchie, Verweise und Zyklusfreiheit |
+| Voraussetzungen | JavaScript-Verknüpfungen, transitive Abhängigkeiten und Aufgabenauswahl |
+| Aufgaben | 18 Referenzlösungen, DE/EN/RU-Inhalte, getrennte Testbereiche |
+| Compiler | Strenge Typprüfung, negative Typverträge und fehlerhafte Typisierungen |
+| API | Öffentlicher Katalog ohne Lösungen/versteckte Tests, Eingabevalidierung |
+| Laufzeitprogramme | Ergebnisse und Grenzfälle der vorbereiteten Prüfprogramme |
+| Fortschritt | Dimensionen, verschiedene Kontexte, Wiederholung und mastery-Anforderungen |
+| Speicherung | Erneutes Lesen, Duplikate, defekte Daten, Speicherfehler und ältere JS-Einträge |
+| JavaScript | Bestehende Aufgaben, Loader-Verhalten und ausgewählte Komponenten |
+| Sandbox-Lifecycle | Nachrichtenfilter, Timeout, Startfehler, HTML-Escaping und Aufräumen in einer DOM-Nachbildung |
 
-## Изменённые файлы
+Ein Integrationstest verbindet Katalog, Voraussetzungen, Prüfung, gespeicherten
+Attempt, Progress und Next Task. Er führt die Laufzeitprogramme im Testprozess aus;
+er ersetzt nicht die Ausführung im Browser-Worker.
 
-- `package.json`
-- `src/components/TrainingCard.tsx`
-- `src/types/attempt.ts`
-- `src/types/task.ts`
+## Noch offen
 
-## Прямые JavaScript prerequisites
+- Vollständiger Browserablauf für JavaScript und TypeScript.
+- Tatsächliche Durchsetzung von iframe-Isolation, Worker-Timeout und CSP im Browser.
+- Visuelle Kontrolle der Übersicht und des Aufgabenbildschirms auf kleinen Displays.
+- Lokaler JavaScript-Serverstart aus einer frischen Installation.
+- Vercel-Deployment einschließlich TypeScript-Standardbibliotheken.
+- Compiler-Ressourcenlimits und Lastbegrenzung für einen Mehrbenutzerbetrieb.
 
-`arrays`, `async-api`, `basics`, `dom`, `events-forms`, `functions`, `js-arrays-filtering`, `logic-loops`, `modules-oop`, `objects`.
+## Manueller Browser-Prüfablauf
 
-Исходник `/Users/annafilippi/PET/pet` не изменён. Все изменения находятся в
-рабочей копии `pet-typescript`. Файл `pet-typescript-foundation.patch` рядом с ней
-содержит только новые и изменённые файлы этапа, без зависимостей и секретов.
+1. Anwendung mit `npm run client` starten und TypeScript auswählen.
+   Die Oberfläche auf DE, EN und RU prüfen.
+2. Eine Aufgabe ohne bestätigte Voraussetzungen öffnen: Start muss gesperrt sein.
+   Passende Vorkenntnisse angeben und die Sitzung starten.
+3. Im ersten Inferenz-Beispiel zuerst einen falschen, danach einen richtigen
+   Typnamen als String in `result` abgeben. Ergebnis und gespeicherten Attempt prüfen.
+4. Seite neu laden: Der Übungsfortschritt bleibt erhalten; ein einzelner Erfolg
+   erhöht nicht den mastery-Zähler.
+5. Eine Interface- oder readonly-Aufgabe mit falschem Typvertrag abgeben:
+   Ein passender Laufzeitwert allein darf nicht genügen.
+6. Sichtbare Tests, drei Hinweise und die anschließende Lösungsansicht prüfen.
+   Eine Lösung nach Lösungsansicht darf keine selbstständige Leistung ergeben.
+7. Eine Laufzeitaufgabe mit Endlosschleife prüfen: Der Vorgang muss abbrechen,
+   die Seite muss bedienbar bleiben.
+8. Zwischen vorherigen und nächsten Aufgaben wechseln und eine Sitzung beenden.
+   Bei erschöpftem Aufgabenangebot muss die tatsächlich gelöste Anzahl erscheinen.
+9. Bei verfügbarem JavaScript-Generator den bisherigen JS-Ablauf prüfen:
+   Generieren, Code prüfen, Hinweise anzeigen und nächste Aufgabe laden.
+
+Architektur und Betriebsgrenzen stehen in der
+[Integrationsdokumentation](typescript-integration.md).
