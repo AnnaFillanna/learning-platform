@@ -3,7 +3,7 @@ import type { LearningSnapshot } from "../types/learning";
 import type { LearningStage } from "../types/skill";
 import type { ProgrammingLanguage, Task } from "../types/task";
 
-export function getTaskRequirements(task: Task) {
+export function getTaskRequirements(task: Pick<Task, "topics" | "prerequisites">) {
   const skills = new Set(task.prerequisites ?? []);
   for (const id of [...task.topics, ...skills]) {
     skillRegistry.get(id);
@@ -16,9 +16,9 @@ export function getTaskRequirements(task: Task) {
   return { skills: [...skills], knowledge: [...knowledge] };
 }
 
-export function getTaskReadiness(task: Task, snapshot: LearningSnapshot) {
+export function getTaskReadiness(task: Pick<Task, "topics" | "prerequisites">, snapshot: LearningSnapshot) {
   const requirements = getTaskRequirements(task);
-  const mastered = new Set(snapshot.masteredSkillIds);
+  const mastered = new Set([...snapshot.masteredSkillIds, ...(snapshot.placementSkillIds ?? []), ...(snapshot.practicedSkillIds ?? [])]);
   const confirmed = new Set(snapshot.confirmedKnowledge);
   const missingSkills = requirements.skills.filter((id) => !mastered.has(id));
   const missingKnowledge = requirements.knowledge.filter((item) => !confirmed.has(item));
@@ -29,12 +29,12 @@ export function getTaskReadiness(task: Task, snapshot: LearningSnapshot) {
   };
 }
 
-export function selectNextTask(
-  tasks: readonly Task[],
+export function selectNextTask<T extends Pick<Task, "id" | "topics" | "prerequisites" | "programmingLanguage" | "stage">>(
+  tasks: readonly T[],
   snapshot: LearningSnapshot,
   programmingLanguage: ProgrammingLanguage,
   stage?: LearningStage,
-): Task | undefined {
+): T | undefined {
   const due = new Set(snapshot.dueSkillIds);
   const completed = new Set(snapshot.completedTaskIds);
   const candidates = tasks.filter((task) => {

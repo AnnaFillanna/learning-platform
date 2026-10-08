@@ -4,5 +4,10 @@
       "source": "/api/tasks/generate",
       "destination": "/api/tasks/generate"
     }
-  ]
+  ],
+  "functions": {
+    "api/learning.ts": {
+      "includeFiles": "node_modules/typescript/lib/lib*.d.ts"
+    }
+  }
 }

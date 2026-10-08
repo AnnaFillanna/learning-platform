@@ -1,6 +1,10 @@
 import "./App.css";
 import { useState } from "react";
 
+import TypeScriptOverview from "./components/TypeScriptOverview";
+import type { LearnerTask } from "./types/learnerTask";
+import type { ProgrammingLanguage } from "./types/task";
+
 import LearningPath from "./components/LearningPath";
 import TrainingCard from "./components/TrainingCard";
 import TaskScreen from "./components/TaskScreen";
@@ -12,6 +16,8 @@ import { currentBlock, learningBlocks } from "./progress/currentBlock";
 import { translations } from "./i18n/translations";
 
 function App() {
+  const [programmingLanguage, setProgrammingLanguage] = useState<ProgrammingLanguage>("javascript");
+  const [learningTasks, setLearningTasks] = useState<LearnerTask[]>([]);
   const [language, setLanguage] = useState<Language>("de");
   const [selectedBlockId, setSelectedBlockId] = useState(currentBlock.id);
   const [blocks, setBlocks] = useState(learningBlocks);
@@ -47,6 +53,7 @@ const handleResetBlock = () => {
         onBack={() => setSession(null)}
         language={language}
         session={session}
+        learningTasks={learningTasks}
       />
     );
   }
@@ -83,6 +90,11 @@ const handleResetBlock = () => {
         </div>
       </header>
 
+      <nav className="languageSwitcher programmingSwitcher" aria-label="Programming language">
+        {(["javascript", "typescript"] as const).map((value) => <button key={value}
+          className={programmingLanguage === value ? "active" : ""} aria-pressed={programmingLanguage === value}
+          onClick={() => setProgrammingLanguage(value)}>{value === "javascript" ? "JavaScript" : "TypeScript"}</button>)}
+      </nav>
       <div className="home">
         <section className="heroTop">
           <div>
@@ -101,6 +113,10 @@ const handleResetBlock = () => {
         </section>
 
         <section className="dashboard">
+          {programmingLanguage === "typescript" ? <TypeScriptOverview language={language} onStart={(tasks, initialTaskId, count) => {
+            setLearningTasks(tasks);
+            setSession({ programmingLanguage: "typescript", blockId: "typescript", initialTaskId, taskCount: count });
+          }} /> : <>
           <TrainingCard
             language={language}
             block={selectedBlock}
@@ -116,6 +132,7 @@ const handleResetBlock = () => {
             onSelectBlock={setSelectedBlockId}
             language={language}
           />
+          </>}
         </section>
       </div>
     </main>

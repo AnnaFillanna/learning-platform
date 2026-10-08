@@ -45,6 +45,8 @@ export type SkillProgress = {
 
 export type LearningSnapshot = {
   masteredSkillIds: readonly SkillId[];
+  placementSkillIds?: readonly SkillId[];
+  practicedSkillIds?: readonly SkillId[];
   dueSkillIds: readonly SkillId[];
   completedTaskIds: readonly string[];
   confirmedKnowledge: readonly string[];

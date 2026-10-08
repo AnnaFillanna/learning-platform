@@ -1,5 +1,7 @@
 # TypeScript foundation — этап 1
 
+> Исторический отчёт первого этапа. Актуальное подключение приложения описано в [typescript-integration.md](typescript-integration.md).
+
 Исходник: `/Users/annafilippi/PET/pet`. Результат находится в отдельной папке
 `pet-typescript` рядом с прежними рабочими копиями. Исходник и `sources/` не изменены.
 

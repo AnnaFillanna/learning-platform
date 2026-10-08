@@ -1,4 +1,4 @@
-import type { Language } from "./task";
+import type { Language, ProgrammingLanguage } from "./task";
 
 export const SESSION_SIZES = [5, 10, 15] as const;
 export type SessionSize = (typeof SESSION_SIZES)[number];
@@ -16,6 +16,8 @@ export type LearningBlock = {
 };
 
 export type TrainingSession = {
+  programmingLanguage?: ProgrammingLanguage;
+  initialTaskId?: string;
   blockId: LearningBlock["id"];
   taskCount: SessionSize;
 };

@@ -2,6 +2,7 @@ import type { LearningStage, MasteryDimension, SkillId } from "./skill";
 import type { ProgrammingLanguage } from "./task";
 
 export type Attempt = {
+  id?: string;
   taskId: string;
   programmingLanguage?: ProgrammingLanguage;
   topics?: SkillId[];
