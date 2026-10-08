@@ -1,3 +1,7 @@
+import type { LearningMetadata } from "./learning";
+
+export type ProgrammingLanguage = "javascript" | "typescript";
+
 export type TaskType = "write-code" | "function" | "debug" | "predict";
 
 export type Difficulty = "easy" | "medium" | "hard";
@@ -8,9 +12,9 @@ export type LocalizedContent = {
   hints: string[];
 };
 
-export type Task = {
+export type Task = Partial<LearningMetadata> & {
   id: string;
-  programmingLanguage: "javascript";
+  programmingLanguage: ProgrammingLanguage;
   type: TaskType;
   topics: string[];
   difficulty: Difficulty;
