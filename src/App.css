@@ -614,8 +614,7 @@ button {
   margin: 6px 0 0;
   color: #c9a2a7;
 }
-/* =========================
-   TASK SCREEN
+/* ==================   TASK SCREEN
 ========================= */
 
 .taskPage {
@@ -1050,4 +1049,20 @@ button {
   font-family: monospace;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+}
+.programmingSwitcher { width: min(100%, 1200px); margin: 0 auto 18px; }
+.tsPlacement { border: 1px solid var(--subtext); border-radius: 12px; margin: 18px 0; padding: 14px; }
+.tsPlacement label { display: flex; align-items: baseline; gap: 10px; margin: 9px 0; }
+.tsPlacement p, .tsPractice .sessionNote { line-height: 1.6; }
+.tsMapSections { margin-top: 24px; }
+.tsMapSections details { margin: 14px 0; }
+.tsMapSections summary { cursor: pointer; line-height: 1.5; }
+.tsMapSections li { margin: 12px 0; }
+.tsMapSections small { display: block; color: var(--subtext); line-height: 1.5; }
+.consoleErrorDetails strong { white-space: pre-wrap; overflow-wrap: anywhere; }
+
+.tsPractice .continueButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
 }

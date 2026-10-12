@@ -1,4 +1,4 @@
-import type { Task } from "../types/task";
+import type { LearnerTask } from "../types/learnerTask";
 
 type RunResult = {
   success: boolean;
@@ -11,7 +11,7 @@ type RunResult = {
   };
 };
 
-export function runJavaScript(code: string, task: Task): RunResult {
+export function runJavaScript(code: string, task: LearnerTask): RunResult {
   const inputNames = Object.keys(task.input);
   const inputValues = Object.values(task.input);
 

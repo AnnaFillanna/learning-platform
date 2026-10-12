@@ -56,24 +56,22 @@ function TrainingCard({
           max={100}
         />
 
-        {true && (
-          <div className="resetAction">
-            <button
-              className="resetButton"
-              onClick={() => {
-                const confirmed = window.confirm(
-                  "Möchtest du diesen Block wirklich neu starten?",
-                );
+        <div className="resetAction">
+          <button
+            className="resetButton"
+            onClick={() => {
+              const confirmed = window.confirm(
+                "Möchtest du diesen Block wirklich neu starten?",
+              );
 
-                if (confirmed) {
-                  onReset();
-                }
-              }}
-            >
-              ↻ Wiederholen
-            </button>
-          </div>
-        )}
+              if (confirmed) {
+                onReset();
+              }
+            }}
+          >
+            ↻ Wiederholen
+          </button>
+        </div>
       </div>
 
       <fieldset className="sessionSelection">

@@ -1,70 +1,93 @@
-# Learning Platform 🚀
+# Pet — Learning Platform
 
-> 🚧 Work in Progress – persönliches Projekt in aktiver Entwicklung.
+Pet ist ein persönliches Projekt für eine interaktive Lernplattform für JavaScript
+und TypeScript. Im Mittelpunkt stehen praktische Aufgaben, verknüpfte Fähigkeiten
+und der Übergang von geführtem Üben zur selbstständigen Anwendung.
 
-Die **Learning Platform** ist mein eigenes Projekt zur Entwicklung einer interaktiven Lernumgebung für Programmierung.
+**Status: in Entwicklung.** Die TypeScript-Integration ist implementiert und
+auf Modul- und API-Ebene getestet. Die vollständige Prüfung im Browser und ein
+Deployment-Test stehen noch aus.
 
-Die Idee geht über eine klassische Sammlung von Programmieraufgaben hinaus. Ziel ist es, eine Lernumgebung zu entwickeln, die nicht nur Syntax vermittelt, sondern Schritt für Schritt **logisches Denken, Problemlösung und selbstständiges Programmieren** fördert.
+## Funktionsumfang
 
-Nutzer sollen verschiedene Lösungswege kennenlernen, ihre Fähigkeiten systematisch aufbauen und sich von geführten Übungen schrittweise zu komplexeren und praxisnahen Aufgaben entwickeln.
+- JavaScript-Training mit Aufgabengenerierung und Codeausführung.
+- TypeScript-Karte mit 26 Bereichen und 216 Fähigkeiten, darunter 54 Unterfähigkeiten.
+- Abhängigkeiten zwischen JavaScript- und TypeScript-Kenntnissen.
+- 18 TypeScript-Aufgaben mit deutschen, englischen und russischen Inhalten.
+- Gemeinsamer Aufgabenbildschirm mit Editor, schrittweisen Hinweisen und Lösung auf Abruf.
+- Prüfung von TypeScript-Typen sowie Laufzeitverhalten und Grenzfällen.
+- Lokale Speicherung von Versuchen und Lernfortschritt im Browser.
+- Unterschiedliche Bewertung von Vorkenntnissen, Übungserfahrung und Beherrschung.
 
-## Aktueller Schwerpunkt
+Die Skill Map beschreibt auch fortgeschrittene Themen wie Generics, React und
+Architektur. Der Aufgabenbestand deckt bisher vor allem die Grundlagen ab;
+nicht jeder Bereich besitzt bereits eigene Übungen.
 
-Der erste Lernbereich konzentriert sich auf **JavaScript**.
+## Technischer Aufbau
 
-Das Projekt befindet sich noch in einer frühen Entwicklungsphase. Die Architektur, Funktionen und Benutzeroberfläche werden kontinuierlich weiterentwickelt.
+React, TypeScript und Vite bilden die Anwendung. Die Oberfläche verwendet CSS.
+Die TypeScript-Prüfung nutzt die TypeScript Compiler API auf dem Server und
+einen iframe mit Web Worker für die Laufzeitprüfung im Browser.
 
-## Tech Stack
+| Bereich | Verzeichnis |
+| --- | --- |
+| Oberfläche | `src/components` |
+| Skill Maps und Abhängigkeiten | `src/skills` |
+| Aufgabenkatalog und Auswahl | `src/learning`, `src/tasks` |
+| Versuche und Fortschritt | `src/progress` |
+| Codeausführung | `src/runner` |
+| TypeScript-API und Compilerprüfung | `api/learning.ts`, `server` |
+| Automatisierte Prüfungen | `tests` |
 
-- React
-- TypeScript
-- Vite
-- CSS
+## Lokal starten
 
-## Geplante Funktionen
+Voraussetzungen: Node.js und npm. Der dokumentierte Prüfstand verwendet Node.js 24.
+Im Projektverzeichnis:
 
-- strukturierte Lernpfade für verschiedene Programmiersprachen
-- interaktive Programmieraufgaben
-- unterschiedliche Aufgabentypen zur Entwicklung von Logik und Problemlösung
-- individuelles Fortschritts- und Kompetenztracking
-- Erkennung und gezieltes Training von Wissenslücken
-- mehrsprachige Benutzeroberfläche
-- adaptive Übungen abhängig vom aktuellen Lernstand
-- zwei integrierte Lernassistenten, die Nutzer während des Lernprozesses unterstützen
-- schrittweiser Übergang von geführten Übungen zu selbstständigem Programmieren
-- modular erweiterbare Unterstützung verschiedener Programmiersprachen
+```sh
+npm ci
+npm run client
+```
 
-## Programmiersprachen
+Anschließend die von Vite angezeigte lokale Adresse öffnen und **TypeScript**
+auswählen. Der Vite-Entwicklungsserver stellt auch die TypeScript-API bereit.
+Für dieses Training ist kein externer AI-Dienst erforderlich.
 
-Der erste Lernbereich wird aktuell für **JavaScript** entwickelt.
+Das JavaScript-Training verwendet einen separaten Generator: lokal auf Port 3001,
+im Deployment unter `/api/tasks/generate`. Dieser benötigt `OPENAI_API_KEY`.
+Die lokale Serverkonfiguration ist noch unvollständig: `express`, `cors` und `tsx`
+werden vom Server verwendet, sind aber derzeit nicht in `package.json` aufgeführt.
+`npm run dev` ist deshalb noch kein verifizierter Startweg für eine frische
+Installation. Der TypeScript-Start über `npm run client` ist davon unabhängig.
 
-Die Plattform ist jedoch nicht auf eine einzelne Programmiersprache ausgelegt. 
-Das Lernkonzept soll langfristig auf verschiedene Programmiersprachen und deren jeweilige Besonderheiten übertragbar sein.
+## Prüfungen
 
-Dazu können unter anderem gehören:
+```sh
+npm test
+npm run typecheck
+npm run lint
+npm run build
+```
 
-- JavaScript
-- TypeScript
-- Python
-- Java
-- C#
-- C++
-- PHP
-- Go
-- Rust
-- Swift
-- Kotlin
+Der letzte dokumentierte Prüfstand umfasst **78 erfolgreiche Tests** sowie
+Typecheck, Lint und Build. Diese Prüfungen ersetzen keinen Browser-End-to-End-Test.
+Details und die ausstehenden manuellen Prüfschritte stehen im
+[Validierungsbericht](docs/implementation-report.md).
 
-Weitere Sprachen können modular ergänzt werden.
+## Lernmodell
 
-## Projektziel
+Eine Aufgabe kann mehrere Fähigkeiten kombinieren. Vorkenntnisse werden über
+Abhängigkeiten geprüft; eine Selbsteinschätzung wird getrennt von nachgewiesener
+Beherrschung gespeichert. Ein einzelnes erfolgreiches Beispiel oder viele
+Wiederholungen derselben Aufgabe reichen nicht für mastery aus.
 
-Ziel ist die Entwicklung eines erweiterbaren Learning Systems, das Programmieren nicht nur durch Wiederholung vermittelt.
+Siehe [Skill Map und Datenmodell](docs/typescript-foundation.md) sowie
+[Aufgabenprüfung und Fortschritt](docs/typescript-integration.md).
 
-Die Plattform soll Nutzer dabei unterstützen, algorithmisches Denken, Problemlösung und ein echtes Verständnis für Programmierung zu entwickeln – unabhängig von einer bestimmten Programmiersprache.
+## Nächste Schritte
 
-Jede Sprache erhält dabei einen eigenen strukturierten Lernpfad mit Themen, Fähigkeiten, Abhängigkeiten und unterschiedlichen Aufgabentypen.
-
----
-
-Dieses Projekt wird eigenständig konzipiert und entwickelt.
+- Den vollständigen JavaScript- und TypeScript-Ablauf im Browser prüfen.
+- Die lokale JavaScript-Serverkonfiguration vervollständigen.
+- Compiler-Isolation und Ressourcenbegrenzung für einen öffentlichen Mehrbenutzerbetrieb ergänzen.
+- Die Aufgabenabdeckung entlang der vorhandenen Skill Map schrittweise erweitern.
+- Den vorgesehenen Vercel-Deployment-Weg prüfen.
