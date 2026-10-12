@@ -6,6 +6,11 @@ import type { Task, Language } from "../types/task";
 
 import type { TrainingSession } from "../types/training";
 
+import {
+  runLivePreview,
+  type LivePreviewResult,
+} from "../runner/livePreviewRunner";
+
 type TaskScreenProps = {
   session: TrainingSession;
   onBack: () => void;
@@ -46,7 +51,9 @@ function formatOutput(value: unknown): string {
 
 function TaskScreen({ onBack, language, session }: TaskScreenProps) {
   const t = translations[language];
-
+  const [livePreview, setLivePreview] = useState<LivePreviewResult>({
+    status: "idle",
+  });
   const [sessionComplete, setSessionComplete] = useState(false);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
@@ -78,7 +85,9 @@ function TaskScreen({ onBack, language, session }: TaskScreenProps) {
         setIsGenerating(false);
       },
     );
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, [loadTask]);
 
   const generateNewTask = async () => {
@@ -102,15 +111,62 @@ function TaskScreen({ onBack, language, session }: TaskScreenProps) {
     }
   };
 
+  const previewCode = task
+  ? (taskStates[task.id]?.code ?? task.starterCode)
+  : "";
+
+  useEffect(() => {
+    let cancelled = false;
+
+    if (!task || !previewCode.trim() || sessionComplete) {
+      setLivePreview({ status: "idle" });
+      return;
+    }
+
+    setLivePreview({ status: "running" });
+
+    const timer = setTimeout(() => {
+      runLivePreview(previewCode, task.input)
+        .then((previewResult) => {
+          if (!cancelled) {
+            setLivePreview(previewResult);
+          }
+        })
+        .catch(() => {
+          if (!cancelled) {
+            setLivePreview({
+              status: "error",
+              error: {
+                name: "PreviewError",
+                message: "Die Vorschau konnte nicht gestartet werden.",
+              },
+            });
+          }
+        });
+    }, 600);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [previewCode, task, sessionComplete]);
+
   if (sessionComplete) {
     return (
       <main className="taskPage">
-        <section className="trainingCard sessionComplete" aria-labelledby="session-complete-title">
+        <section
+          className="trainingCard sessionComplete"
+          aria-labelledby="session-complete-title"
+        >
           <p className="trainingLabel">{t.sessionLabel}</p>
           <h1 id="session-complete-title">{t.sessionComplete}</h1>
-          <p>{session.taskCount} {t.tasks} ✓</p>
+          <p>
+            {session.taskCount} {t.tasks} ✓
+          </p>
           <p className="sessionNote">{t.blockContinues}</p>
-          <button className="continueButton" onClick={onBack}>{t.backToOverview}</button>
+          <button className="continueButton" onClick={onBack}>
+            {t.backToOverview}
+          </button>
         </section>
       </main>
     );
@@ -119,14 +175,19 @@ function TaskScreen({ onBack, language, session }: TaskScreenProps) {
   if (!task) {
     return (
       <main className="taskPage">
-        <button className="backButton" onClick={onBack}>← Zurück</button>
+        <button className="backButton" onClick={onBack}>
+          ← Zurück
+        </button>
         <div role="status" aria-live="polite">
           {isGenerating && <p>Neue Aufgabe wird vorbereitet...</p>}
           {generationError && <p>{generationError}</p>}
         </div>
         {generationError && (
-          <button className="nextButton" disabled={isGenerating}
-            onClick={() => void generateNewTask()}>
+          <button
+            className="nextButton"
+            disabled={isGenerating}
+            onClick={() => void generateNewTask()}
+          >
             Erneut versuchen
           </button>
         )}
@@ -173,7 +234,10 @@ function TaskScreen({ onBack, language, session }: TaskScreenProps) {
   const visibleHints = currentTaskState.visibleHints;
   const showSolution = currentTaskState.showSolution;
   const output = currentTaskState.output;
+  const expected = currentTaskState.expected;
   const executionError = currentTaskState.error;
+
+
 
   const handleCheck = () => {
     const checkResult = runJavaScript(code, task);
@@ -251,7 +315,9 @@ function TaskScreen({ onBack, language, session }: TaskScreenProps) {
           <strong>Pet</strong>
         </div>
 
-        <div className="taskCounter">{t.sessionLabel} · {currentTaskIndex + 1} / {session.taskCount}</div>
+        <div className="taskCounter">
+          {t.sessionLabel} · {currentTaskIndex + 1} / {session.taskCount}
+        </div>
       </header>
 
       <div className="taskLayout">
@@ -385,17 +451,19 @@ function TaskScreen({ onBack, language, session }: TaskScreenProps) {
               <span className="consoleArrow">→</span>
 
               <span className="consoleValue">
-                {executionError
-                  ? "Error"
-                  : output !== null
-                    ? formatOutput(output)
-                    : "Noch kein Ergebnis"}
+                {livePreview.status === "running"
+                  ? "Code wird ausgeführt..."
+                  : livePreview.status === "error"
+                    ? `${livePreview.error?.name}: ${livePreview.error?.message}`
+                    : livePreview.status === "success"
+                      ? formatOutput(livePreview.output)
+                      : "Noch kein Ergebnis"}
               </span>
             </div>
 
-            {!result && !executionError && (
+            {livePreview.status === "idle" && (
               <p className="consoleHint">
-                // Führe deinen Code aus, um das Ergebnis zu sehen.
+                // Schreibe deinen Code, um das Ergebnis automatisch zu sehen.
               </p>
             )}
 
@@ -406,10 +474,23 @@ function TaskScreen({ onBack, language, session }: TaskScreenProps) {
             )}
 
             {!isSolved && result && !executionError && (
-              <p className="consoleMessage">
-                Das Ergebnis entspricht noch nicht der Aufgabe. Prüfe deinen
-                Code noch einmal.
-              </p>
+              <div className="resultComparison">
+                <div className="actualResult">
+                  <strong>❌ Dein Ergebnis:</strong>
+                  <pre>
+                    {output !== null ? formatOutput(output) : "Kein Ergebnis"}
+                  </pre>
+                </div>
+
+                <div className="expectedResult">
+                  <strong>✅ Erwartetes Ergebnis:</strong>
+                  <pre>
+                    {expected !== null && expected !== undefined
+                      ? formatOutput(expected)
+                      : "Erwartetes Ergebnis nicht verfügbar"}
+                  </pre>
+                </div>
+              </div>
             )}
 
             {executionError && (

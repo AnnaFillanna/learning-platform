@@ -1018,3 +1018,36 @@ button {
 .hintCard p {
   color: #555767;
 }
+
+.resultComparison {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.actualResult,
+.expectedResult {
+  padding: 14px 16px;
+  border-radius: 10px;
+}
+
+.actualResult {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #f87171;
+}
+
+.expectedResult {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  color: #4ade80;
+}
+
+.actualResult pre,
+.expectedResult pre {
+  margin: 10px 0 0;
+  font-family: monospace;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
