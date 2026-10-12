@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchLearningCatalog } from "../generator/learningClient";
-import { getTaskReadiness, getTaskRequirements } from "../learning/nextTask";
+import { getPracticeReadiness, getTaskRequirements } from "../learning/nextTask";
 import { loadLearningProgress, getPlacement, savePlacement, deriveProgress } from "../progress/learningProgress";
 import { getAttempts } from "../progress/attemptStorage";
 import { skillRegistry } from "../skills/registry";
@@ -27,7 +27,7 @@ export default function TypeScriptOverview({ language, onStart }: Props) {
       if (!active) return;
       setTasks(catalog);
       const snapshot = loadLearningProgress(catalog).snapshot;
-      const available = catalog.find((task) => !snapshot.completedTaskIds.includes(task.id) && getTaskReadiness(task, snapshot).eligible);
+      const available = catalog.find((task) => !snapshot.completedTaskIds.includes(task.id) && getPracticeReadiness(task, snapshot).eligible);
       setSelectedId(available?.id ?? catalog[0]?.id ?? "");
       setLoading(false);
     }).catch(() => { if (active) { setError(true); setLoading(false); } });
@@ -35,8 +35,9 @@ export default function TypeScriptOverview({ language, onStart }: Props) {
   }, [retry]);
   const { snapshot } = deriveProgress(tasks, getAttempts(), placement);
   const selected = tasks.find((task) => task.id === selectedId);
-  const readiness = selected ? getTaskReadiness(selected, snapshot) : undefined;
+  const readiness = selected ? getPracticeReadiness(selected, snapshot) : undefined;
   const requirements = selected ? getTaskRequirements(selected) : { skills: [], knowledge: [] };
+  const placementSkills = requirements.skills.filter((id) => skillRegistry.get(id).programmingLanguage === "typescript");
   const confirmedByPractice = new Set([...snapshot.masteredSkillIds, ...(snapshot.practicedSkillIds ?? [])]);
   const due = selected?.topics.some((id) => snapshot.dueSkillIds.includes(id));
   const ready = readiness?.eligible && (selected?.stage !== "delayed-repetition" || due);
@@ -53,9 +54,9 @@ export default function TypeScriptOverview({ language, onStart }: Props) {
           <h3>{selected.content[language].title}</h3>
           <p>{selected.content[language].description}</p>
           <p>{ready ? t.ready : t.missing}</p>
-          {requirements.skills.some((id) => !confirmedByPractice.has(id)) && <fieldset className="tsPlacement">
+          {placementSkills.some((id) => !confirmedByPractice.has(id)) && <fieldset className="tsPlacement">
             <legend>{t.placement}</legend><p>{t.placementHelp}</p>
-            {requirements.skills.filter((id) => !confirmedByPractice.has(id)).map((id) => <label key={id}>
+            {placementSkills.filter((id) => !confirmedByPractice.has(id)).map((id) => <label key={id}>
               <input type="checkbox" checked={placement.includes(id)} onChange={(event) => {
                 const next = event.target.checked ? [...placement, id] : placement.filter((item) => item !== id);
                 setPlacement(next);
@@ -68,6 +69,7 @@ export default function TypeScriptOverview({ language, onStart }: Props) {
           <fieldset className="sessionSelection"><legend>{t.sessionSize}</legend><div className="sessionOptions">
             {SESSION_SIZES.map((size) => <label key={size}><input type="radio" name="ts-session-size" value={size} checked={count === size} onChange={() => setCount(size)} /><span>{size}</span></label>)}
           </div></fieldset>
+          {!ready && !!readiness?.missingSkills.length && <p role="status">{t.remaining}: {readiness.missingSkills.length}. {t.selectRequired}</p>}
           <button className="continueButton" disabled={!ready || storageError} onClick={() => onStart(tasks, selected.id, count)}>{t.start} →</button>
           {storageError && <p role="alert">{t.saveError}</p>}
           <p className="sessionNote">{t.noMastery}</p>
@@ -79,7 +81,7 @@ export default function TypeScriptOverview({ language, onStart }: Props) {
           <button className="learningPathRow" aria-pressed={selectedId === task.id} onClick={() => setSelectedId(task.id)}>
             <span className="learningPathNumber">{index + 1}</span><span className="learningPathDetails">
               <span className="learningPathName">{task.content[language].title}</span>
-              <span className="learningPathDescription">{task.stage === "delayed-repetition" && !task.topics.some((id) => snapshot.dueSkillIds.includes(id)) ? t.reviewWaiting : snapshot.completedTaskIds.includes(task.id) ? t.completed : getTaskReadiness(task, snapshot).eligible ? t.ready : t.prerequisites}{task.topics.some((id) => snapshot.dueSkillIds.includes(id)) ? ` · ${t.due}` : ""}</span>
+              <span className="learningPathDescription">{task.stage === "delayed-repetition" && !task.topics.some((id) => snapshot.dueSkillIds.includes(id)) ? t.reviewWaiting : snapshot.completedTaskIds.includes(task.id) ? t.completed : getPracticeReadiness(task, snapshot).eligible ? t.ready : t.prerequisites}{task.topics.some((id) => snapshot.dueSkillIds.includes(id)) ? ` · ${t.due}` : ""}</span>
             </span>
           </button>
         </li>)}</ol>

@@ -1,5 +1,6 @@
 export const learningTranslations = {
   ru: {
+    remaining: "Не отмечено тем TypeScript", selectRequired: "Если темы знакомы, отметь их выше — это откроет задание.",
     reviewWaiting: "Повторение пока не требуется.",
     title: "Практика TypeScript", loading: "Загружаем задания…", retry: "Повторить", unavailable: "Не удалось загрузить задания. Проверь подключение и попробуй ещё раз.",
     placement: "Уже знакомые темы", placementHelp: "Отметь только темы, которыми уже пользуешься. Это самооценка для допуска к практике, а не подтверждение освоения.",
@@ -13,6 +14,7 @@ export const learningTranslations = {
     catalog: "Карта TypeScript", noExercises: "Практика этого раздела ещё не добавлена", prerequisites: "Зависимости", knowledge: "Дополнительные знания", finish: "К обзору",
   },
   de: {
+    remaining: "Noch nicht bestätigte TypeScript-Themen", selectRequired: "Wenn du die Themen kennst, markiere sie oben, um die Aufgabe zu öffnen.",
     reviewWaiting: "Die Wiederholung ist noch nicht fällig.",
     title: "TypeScript üben", loading: "Aufgaben werden geladen…", retry: "Erneut versuchen", unavailable: "Aufgaben konnten nicht geladen werden. Prüfe die Verbindung und versuche es erneut.",
     placement: "Bereits bekannte Themen", placementHelp: "Markiere nur Themen, die du bereits verwendest. Diese Selbsteinschätzung ermöglicht Übungen, bestätigt aber keine Beherrschung.",
@@ -26,6 +28,7 @@ export const learningTranslations = {
     catalog: "TypeScript-Lernkarte", noExercises: "Für diesen Abschnitt gibt es noch keine Übungen", prerequisites: "Voraussetzungen", knowledge: "Zusätzliches Wissen", finish: "Zur Übersicht",
   },
   en: {
+    remaining: "TypeScript topics not yet confirmed", selectRequired: "If you know these topics, select them above to unlock the task.",
     reviewWaiting: "This review is not due yet.",
     title: "TypeScript practice", loading: "Loading tasks…", retry: "Retry", unavailable: "Could not load tasks. Check your connection and try again.",
     placement: "Topics you already know", placementHelp: "Select only topics you already use. This self-assessment unlocks practice; it does not certify mastery.",

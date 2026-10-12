@@ -61,3 +61,29 @@ test("old JS attempts survive new TS writes without migration or loss", () => {
   assert.deepEqual(plain(getAttempts()[0]), legacy);
   assert.equal(getAttempts().length, 2);
 });
+
+test("TS practice starts with only TS placement, without granting JS progress", async () => {
+  const localStorage = memoryStorage();
+  const load = createLoader({ localStorage });
+  const { handleLearning } = load("server/learningHandler.ts");
+  const { getTaskRequirements, getTaskReadiness, getPracticeReadiness } = load("src/learning/nextTask.ts");
+  const { skillRegistry } = load("src/skills/registry.ts");
+  const { savePlacement, loadLearningProgress } = load("src/progress/learningProgress.ts");
+  const { createLearningLoader } = load("src/generator/learningLoader.ts");
+  const tasks = handleLearning({ action: "catalog" }).body.tasks;
+  const tsRequirements = getTaskRequirements(tasks[0]).skills.filter((id) => skillRegistry.get(id).programmingLanguage === "typescript");
+  const readSnapshot = () => loadLearningProgress(tasks).snapshot;
+  assert.equal(getPracticeReadiness(tasks[0], readSnapshot()).eligible, false);
+  savePlacement(tsRequirements.slice(1));
+  assert.equal(getPracticeReadiness(tasks[0], readSnapshot()).missingSkills.length, 1);
+  assert.equal(await createLearningLoader(tasks, readSnapshot, tasks[0].id)(0), undefined);
+  savePlacement(tsRequirements);
+  assert.equal(getPracticeReadiness(tasks[0], readSnapshot()).eligible, true);
+  assert.equal((await createLearningLoader(tasks, readSnapshot, tasks[0].id)(0)).id, tasks[0].id);
+  assert.equal((await createLearningLoader(tasks, readSnapshot)(0)).id, tasks[0].id);
+  assert.equal(getTaskReadiness(tasks[0], readSnapshot()).eligible, false);
+  assert.deepEqual(plain(readSnapshot().masteredSkillIds), []);
+  assert.ok(readSnapshot().placementSkillIds.every((id) => id.startsWith("ts-")));
+  const jsTask = { ...tasks[0], programmingLanguage: "javascript" };
+  assert.equal(getPracticeReadiness(jsTask, readSnapshot()).eligible, false);
+});

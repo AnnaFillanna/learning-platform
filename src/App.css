@@ -1029,3 +1029,9 @@ button {
 .tsMapSections li { margin: 12px 0; }
 .tsMapSections small { display: block; color: var(--subtext); line-height: 1.5; }
 .consoleErrorDetails strong { white-space: pre-wrap; overflow-wrap: anywhere; }
+
+.tsPractice .continueButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}

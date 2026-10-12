@@ -29,17 +29,28 @@ export function getTaskReadiness(task: Pick<Task, "topics" | "prerequisites">, s
   };
 }
 
+export function getPracticeReadiness(
+  task: Pick<Task, "topics" | "prerequisites" | "programmingLanguage">,
+  snapshot: LearningSnapshot,
+) {
+  const readiness = getTaskReadiness(task, snapshot);
+  if (task.programmingLanguage !== "typescript") return readiness;
+  const missingSkills = readiness.missingSkills.filter((id) => skillRegistry.get(id).programmingLanguage === "typescript");
+  return { ...readiness, missingSkills, eligible: missingSkills.length === 0 && readiness.missingKnowledge.length === 0 };
+}
+
 export function selectNextTask<T extends Pick<Task, "id" | "topics" | "prerequisites" | "programmingLanguage" | "stage">>(
   tasks: readonly T[],
   snapshot: LearningSnapshot,
   programmingLanguage: ProgrammingLanguage,
   stage?: LearningStage,
+  readiness: (task: T, snapshot: LearningSnapshot) => ReturnType<typeof getTaskReadiness> = getTaskReadiness,
 ): T | undefined {
   const due = new Set(snapshot.dueSkillIds);
   const completed = new Set(snapshot.completedTaskIds);
   const candidates = tasks.filter((task) => {
     if (task.programmingLanguage !== programmingLanguage || (stage && task.stage !== stage)) return false;
-    if (!getTaskReadiness(task, snapshot).eligible) return false;
+    if (!readiness(task, snapshot).eligible) return false;
     if (task.stage === "delayed-repetition") return task.topics.some((id) => due.has(id));
     return !completed.has(task.id);
   });
