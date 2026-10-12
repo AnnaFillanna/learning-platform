@@ -1,5 +1,5 @@
-import type { Task } from "../types/task";
-import type { LearningMetadata } from "../types/learning";
+import type { Task } from "../types/task.js";
+import type { LearningMetadata } from "../types/learning.js";
 
 export const typescriptTasks: (Task & LearningMetadata)[] = [
   {

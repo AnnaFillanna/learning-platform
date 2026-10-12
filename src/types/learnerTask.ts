@@ -1,4 +1,4 @@
-import type { Task } from "./task";
+import type { Task } from "./task.js";
 
 export type LearnerTask = Omit<Task, "solution" | "hiddenTests">;
 

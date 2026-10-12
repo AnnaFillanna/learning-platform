@@ -1,4 +1,4 @@
-import type { LearningMetadata } from "./learning";
+import type { LearningMetadata } from "./learning.js";
 
 export type ProgrammingLanguage = "javascript" | "typescript";
 

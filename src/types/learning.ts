@@ -1,5 +1,5 @@
-import type { LearningStage, MasteryDimension, SkillId } from "./skill";
-import type { ProgrammingLanguage } from "./task";
+import type { LearningStage, MasteryDimension, SkillId } from "./skill.js";
+import type { ProgrammingLanguage } from "./task.js";
 
 export type TestCase =
   | { id: string; kind: "runtime"; expression: string; expected: unknown }

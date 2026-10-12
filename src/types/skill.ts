@@ -1,4 +1,4 @@
-import type { ProgrammingLanguage } from "./task";
+import type { ProgrammingLanguage } from "./task.js";
 
 export const masteryDimensions = [
   "syntax-knowledge",
