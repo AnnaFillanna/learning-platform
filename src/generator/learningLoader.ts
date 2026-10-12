@@ -9,8 +9,7 @@ export function createLearningLoader(tasks: readonly LearnerTask[], readSnapshot
     const snapshot = readSnapshot();
     const used = new Set([...cache.values()].map((task) => task.id));
     const initial = index === 0 ? tasks.find((task) => task.id === initialTaskId) : undefined;
-    if (initial && (!getPracticeReadiness(initial, snapshot).eligible ||
-      (initial.stage === "delayed-repetition" && !initial.topics.some((id) => snapshot.dueSkillIds.includes(id))))) return undefined;
+    if (initial && initial.programmingLanguage !== "typescript") return undefined;
     const next = initial ?? selectNextTask(tasks.filter((task) => !used.has(task.id)), snapshot, "typescript", undefined, getPracticeReadiness);
     if (next) cache.set(index, next);
     return next;

@@ -62,7 +62,7 @@ test("old JS attempts survive new TS writes without migration or loss", () => {
   assert.equal(getAttempts().length, 2);
 });
 
-test("TS practice starts with only TS placement, without granting JS progress", async () => {
+test("TS practice starts without placement, without granting JS progress", async () => {
   const localStorage = memoryStorage();
   const load = createLoader({ localStorage });
   const { handleLearning } = load("server/learningHandler.ts");
@@ -73,10 +73,10 @@ test("TS practice starts with only TS placement, without granting JS progress", 
   const tasks = handleLearning({ action: "catalog" }).body.tasks;
   const tsRequirements = getTaskRequirements(tasks[0]).skills.filter((id) => skillRegistry.get(id).programmingLanguage === "typescript");
   const readSnapshot = () => loadLearningProgress(tasks).snapshot;
-  assert.equal(getPracticeReadiness(tasks[0], readSnapshot()).eligible, false);
+  assert.equal(getPracticeReadiness(tasks[0], readSnapshot()).eligible, true);
   savePlacement(tsRequirements.slice(1));
   assert.equal(getPracticeReadiness(tasks[0], readSnapshot()).missingSkills.length, 1);
-  assert.equal(await createLearningLoader(tasks, readSnapshot, tasks[0].id)(0), undefined);
+  assert.equal((await createLearningLoader(tasks, readSnapshot, tasks[0].id)(0)).id, tasks[0].id);
   savePlacement(tsRequirements);
   assert.equal(getPracticeReadiness(tasks[0], readSnapshot()).eligible, true);
   assert.equal((await createLearningLoader(tasks, readSnapshot, tasks[0].id)(0)).id, tasks[0].id);
@@ -86,4 +86,21 @@ test("TS practice starts with only TS placement, without granting JS progress", 
   assert.ok(readSnapshot().placementSkillIds.every((id) => id.startsWith("ts-")));
   const jsTask = { ...tasks[0], programmingLanguage: "javascript" };
   assert.equal(getPracticeReadiness(jsTask, readSnapshot()).eligible, false);
+});
+
+
+test("empty progress can open every TS task manually and continue a session", async () => {
+  const load = createLoader({ localStorage: memoryStorage() });
+  const tasks = load("server/learningHandler.ts").handleLearning({ action: "catalog" }).body.tasks;
+  const { createLearningLoader } = load("src/generator/learningLoader.ts");
+  const { loadLearningProgress } = load("src/progress/learningProgress.ts");
+  const snapshot = () => loadLearningProgress(tasks).snapshot;
+  for (const task of tasks) {
+    assert.equal((await createLearningLoader(tasks, snapshot, task.id)(0)).id, task.id);
+  }
+  const session = createLearningLoader(tasks, snapshot, tasks[0].id);
+  assert.equal((await session(0)).id, tasks[0].id);
+  assert.equal((await session(1)).id, tasks[1].id);
+  assert.deepEqual(plain(snapshot().placementSkillIds), []);
+  assert.deepEqual(plain(snapshot().masteredSkillIds), []);
 });

@@ -40,7 +40,7 @@ export default function TypeScriptOverview({ language, onStart }: Props) {
   const placementSkills = requirements.skills.filter((id) => skillRegistry.get(id).programmingLanguage === "typescript");
   const confirmedByPractice = new Set([...snapshot.masteredSkillIds, ...(snapshot.practicedSkillIds ?? [])]);
   const due = selected?.topics.some((id) => snapshot.dueSkillIds.includes(id));
-  const ready = readiness?.eligible && (selected?.stage !== "delayed-repetition" || due);
+  const ready = readiness?.eligible;
   const map = skillRegistry.forLanguage("typescript");
   return (
     <>
@@ -69,8 +69,7 @@ export default function TypeScriptOverview({ language, onStart }: Props) {
           <fieldset className="sessionSelection"><legend>{t.sessionSize}</legend><div className="sessionOptions">
             {SESSION_SIZES.map((size) => <label key={size}><input type="radio" name="ts-session-size" value={size} checked={count === size} onChange={() => setCount(size)} /><span>{size}</span></label>)}
           </div></fieldset>
-          {!ready && !!readiness?.missingSkills.length && <p role="status">{t.remaining}: {readiness.missingSkills.length}. {t.selectRequired}</p>}
-          <button className="continueButton" disabled={!ready || storageError} onClick={() => onStart(tasks, selected.id, count)}>{t.start} →</button>
+          <button className="continueButton" disabled={!ready} onClick={() => onStart(tasks, selected.id, count)}>{t.start} →</button>
           {storageError && <p role="alert">{t.saveError}</p>}
           <p className="sessionNote">{t.noMastery}</p>
         </>}

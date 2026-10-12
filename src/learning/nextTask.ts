@@ -36,7 +36,7 @@ export function getPracticeReadiness(
   const readiness = getTaskReadiness(task, snapshot);
   if (task.programmingLanguage !== "typescript") return readiness;
   const missingSkills = readiness.missingSkills.filter((id) => skillRegistry.get(id).programmingLanguage === "typescript");
-  return { ...readiness, missingSkills, eligible: missingSkills.length === 0 && readiness.missingKnowledge.length === 0 };
+  return { ...readiness, missingSkills, eligible: true };
 }
 
 export function selectNextTask<T extends Pick<Task, "id" | "topics" | "prerequisites" | "programmingLanguage" | "stage">>(

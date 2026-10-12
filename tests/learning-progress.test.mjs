@@ -59,7 +59,7 @@ test("duplicate, unknown and future attempts do not duplicate or fabricate evide
   assert.equal(evidence.length, 1);
 });
 
-test("TypeScript loader reads fresh progress, caches current task and ends when none is ready", async () => {
+test("TypeScript loader caches tasks and permits manual practice without placement", async () => {
   const placement = [...new Set(tasks.flatMap((task) => getTaskRequirements(task).skills))];
   const attempts = [];
   const loader = createLearningLoader(tasks, () => deriveProgress(tasks, attempts, placement, now).snapshot, tasks[0].id);
@@ -68,7 +68,9 @@ test("TypeScript loader reads fresh progress, caches current task and ends when 
   assert.equal((await loader(0)).id, tasks[0].id);
   assert.notEqual((await loader(1)).id, tasks[0].id);
   const locked = createLearningLoader(tasks, () => deriveProgress(tasks, [], [], now).snapshot);
-  assert.equal(await locked(0), undefined);
+  assert.equal((await locked(0)).id, tasks[0].id);
   const earlyReview = createLearningLoader(tasks, () => deriveProgress(tasks, [], placement, now).snapshot, tasks[17].id);
-  assert.equal(await earlyReview(0), undefined);
+  assert.equal((await earlyReview(0)).id, tasks[17].id);
+  const completed = createLearningLoader(tasks, () => ({ ...deriveProgress(tasks, [], [], now).snapshot, completedTaskIds: tasks.map((task) => task.id) }));
+  assert.equal(await completed(0), undefined);
 });

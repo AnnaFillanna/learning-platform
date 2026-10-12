@@ -3,7 +3,7 @@
 ## Ablauf
 
 1. Die Oberfläche lädt den TypeScript-Katalog über `/api/learning`.
-2. Die TypeScript-Praxis prüft die TypeScript-Voraussetzungen gegen den aktuellen Lernstand. JavaScript-Vorkenntnisse werden hier nicht erneut per Checkbox abgefragt und blockieren den Praxisstart nicht. Die vollständigen sprachübergreifenden Abhängigkeiten bleiben in der Skill Map und der allgemeinen Bereitschaftsprüfung erhalten; es wird kein JavaScript-Fortschritt automatisch vergeben.
+2. Die TypeScript-Praxis zeigt Voraussetzungen als Empfehlungen an; sie blockieren den Aufgabenstart nicht. JavaScript-Vorkenntnisse werden hier nicht erneut per Checkbox abgefragt und blockieren den Praxisstart nicht. Die vollständigen sprachübergreifenden Abhängigkeiten bleiben in der Skill Map und der allgemeinen Bereitschaftsprüfung erhalten; es wird kein JavaScript-Fortschritt automatisch vergeben.
 3. Der gemeinsame `TaskScreen` zeigt Editor, Aufgabeninhalt und sichtbare Tests.
 4. Der Server prüft eingereichten Code und Typverträge mit dem TypeScript-Compiler.
 5. Nach erfolgreicher Kompilierung führt der Browser die Laufzeitprüfungen aus.
@@ -104,3 +104,5 @@ sind keine serverseitig bestätigten Leistungsnachweise.
 
 Die [Validierungsübersicht](implementation-report.md) beschreibt die bereits
 geprüften Teile und den noch offenen Browser-Prüfablauf.
+
+Die manuelle TypeScript-Praxis kann ohne Vorkenntnis-Checkboxen gestartet werden. Voraussetzungen bleiben Empfehlungen und werden in der allgemeinen Bereitschaftsprüfung weiterhin berücksichtigt. Der Start vergibt weder Vorkenntnisse noch Beherrschung. Manuell gewählte Wiederholungen sind jederzeit zugänglich; die automatische Wiederholung berücksichtigt weiterhin die Fälligkeit.
