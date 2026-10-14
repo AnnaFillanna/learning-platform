@@ -1052,3 +1052,18 @@ button {
 .tsUpcoming { margin-top: 12px; padding: 14px; border: 1px solid rgba(255,255,255,.1); border-radius: 12px; color: var(--text); font-size: 13px; }
 .tsUpcoming summary { cursor: pointer; }
 .tsUpcoming ul { padding-left: 20px; line-height: 1.8; }
+
+button.technicalTerm {
+  display: inline; padding: 0; margin: 0; border: 0; border-radius: 0;
+  background: transparent; color: inherit; font: inherit; line-height: inherit;
+  letter-spacing: inherit; text-align: inherit; cursor: pointer;
+}
+.technicalTermPopup {
+  position: fixed; z-index: 10000; width: 340px; max-width: calc(100vw - 24px);
+  box-sizing: border-box; padding: 14px 16px; border-radius: 12px;
+  border: 1px solid #5c6075; background: #242735; color: #f5f5fa;
+  box-shadow: 0 8px 28px #0005; font: 14px/1.5 system-ui, sans-serif;
+  white-space: normal; overflow-wrap: anywhere; max-height: calc(100vh - 24px); overflow-y: auto;
+}
+.technicalTermPopup strong, .technicalTermPopup > span { display: block; }
+.technicalTermPopup strong { margin-bottom: 6px; }

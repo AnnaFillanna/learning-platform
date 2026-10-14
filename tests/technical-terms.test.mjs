@@ -20,7 +20,8 @@ test('every term returns only the selected interface language without language h
 test('text tooltip and accessible explanation follow the language prop', () => {
   for (const language of ['de', 'ru', 'en']) {
     const html = renderToStaticMarkup(createElement(TechnicalText, { language }, 'Array'));
-    assert.ok(html.includes(`title="Array — ${technicalTerms.array[language]}"`));
+    assert.ok(html.includes('type="button"'));
+    assert.ok(html.includes('aria-expanded="false"'));
     assert.ok(html.includes(`aria-label="Array: ${technicalTerms.array[language]}"`));
     for (const other of ['de', 'ru', 'en'].filter(value => value !== language)) {
       assert.ok(!html.includes(technicalTerms.array[other]));
