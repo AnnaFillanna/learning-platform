@@ -1035,3 +1035,15 @@ button {
   cursor: not-allowed;
   transform: none;
 }
+
+.technicalTerm {
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: #8584a3;
+  text-underline-offset: 3px;
+  cursor: help;
+}
+.technicalTerm:focus-visible {
+  outline: 2px solid #9c8cff;
+  outline-offset: 2px;
+}
