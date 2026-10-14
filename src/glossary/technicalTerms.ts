@@ -1,3 +1,5 @@
+import type { Language } from "../types/task";
+
 /** Curated programming meanings, never general-purpose machine translations. */
 const russianTerms = {
   init: 'Инициализация — подготовка начального состояния программы или объекта. Сокращение от initialize; распространённое имя функции, не ключевое слово JavaScript или TypeScript.',
@@ -119,9 +121,9 @@ export const technicalTerms = Object.fromEntries(
   }]),
 ) as Record<Term, { ru: string; de: string; en: string }>;
 
-export function explainTerm(word: string): string | undefined {
+export function explainTerm(word: string, language: Language): string | undefined {
   const key = word.toLowerCase();
   if (!Object.hasOwn(technicalTerms, key)) return undefined;
   const term = technicalTerms[key as Term];
-  return `Русский: ${term.ru}\n\nDeutsch: ${term.de}\n\nEnglish: ${term.en}`;
+  return term[language];
 }
