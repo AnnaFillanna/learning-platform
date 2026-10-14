@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { fetchLearningCatalog } from '../generator/learningClient';
 import { loadLearningProgress } from '../progress/learningProgress';
-import { getTypeScriptBlocks, getBlockPractice } from '../learning/typescriptBlocks';
+import { getTypeScriptBlocks, getBlockPractice, getBlockRepeatTasks } from '../learning/typescriptBlocks';
 import { learningTranslations } from '../i18n/learningTranslations';
 import type { SessionSize } from '../types/training';
 import type { Language } from '../types/task';
@@ -42,6 +42,7 @@ export default function TypeScriptOverview({ language, onStart }: Props) {
   const available = blocks.filter((block) => block.tasks.length > 0);
   const upcoming = blocks.filter((block) => block.tasks.length === 0);
   const selected = available.find((block) => block.id === selectedId) ?? available[0];
+  const repeatTasks = getBlockRepeatTasks(selected?.tasks ?? []);
   const practice = getBlockPractice(selected?.tasks ?? [], snapshot);
   if (loading || error) return <section className="trainingCard" aria-live="polite">
     <h3>{t.title}</h3>{loading ? <p role="status">{t.loading}</p> : <><p role="alert">{t.unavailable}</p>
@@ -49,6 +50,8 @@ export default function TypeScriptOverview({ language, onStart }: Props) {
   </section>;
   return <>
     {selected ? <TrainingCard language={language} programmingLanguage="TypeScript" block={selected} taskCount={count}
+      onRepeat={() => { if (repeatTasks[0]) onStart(repeatTasks, repeatTasks[0].id, count, selected.id, true); }}
+      repeatDisabled={!repeatTasks.length}
       onTaskCountChange={setCount} disabled={!practice.tasks.length}
       note={`${ui.available}: ${practice.tasks.length}. ${ui.scope}`}
       actionLabel={practice.repeat ? ui.repeat : undefined}

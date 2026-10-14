@@ -1,5 +1,7 @@
 export const translations = {
   de: {
+    repeatBlock: "Wiederholen",
+    resetBlockConfirm: "Möchtest du diesen Block wirklich neu starten?",
     learningPathTitle: "Dein JavaScript-Lernweg",
     blockProgress: "Fortschritt im Lernblock",
     sessionQuestion: "Wie viel möchtest du heute machen?",
@@ -32,6 +34,8 @@ export const translations = {
   },
 
   en: {
+    repeatBlock: "Practice again",
+    resetBlockConfirm: "Restart this block and reset its displayed progress?",
     learningPathTitle: "Your JavaScript learning path",
     blockProgress: "Learning block progress",
     sessionQuestion: "How much would you like to do today?",
@@ -61,6 +65,8 @@ export const translations = {
   },
 
   ru: {
+    repeatBlock: "Повторить",
+    resetBlockConfirm: "Начать этот блок заново и сбросить его отображаемый прогресс?",
     learningPathTitle: "Твой путь изучения JavaScript",
     blockProgress: "Прогресс в учебном блоке",
     sessionQuestion: "Сколько заданий хочешь выполнить сегодня?",

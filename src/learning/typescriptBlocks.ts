@@ -32,5 +32,10 @@ export function getBlockPractice(tasks: readonly LearnerTask[], snapshot: Learni
     ? task.topics.some((id) => snapshot.dueSkillIds.includes(id))
     : !snapshot.completedTaskIds.includes(task.id));
   const repeat = available.length === 0;
-  return { tasks: repeat ? tasks.filter((task) => task.stage !== 'delayed-repetition') : available, repeat };
+  return { tasks: repeat ? getBlockRepeatTasks(tasks) : available, repeat };
+}
+
+/** Manual practice does not reset evidence or unlock scheduled review tasks. */
+export function getBlockRepeatTasks(tasks: readonly LearnerTask[]) {
+  return tasks.filter((task) => task.stage !== "delayed-repetition");
 }

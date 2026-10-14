@@ -66,3 +66,18 @@ test('both displays use independent skill percent, not completed / estimated tas
   assert.match(overview, /63%/);
   assert.match(overview, /width:63%/);
 });
+
+test('repeat action is localized and invokes its handler without resetting progress', () => {
+  for (const [language, label] of [['de', 'Wiederholen'], ['ru', 'Повторить'], ['en', 'Practice again']]) {
+    let repeated = 0;
+    let reset = 0;
+    const props = { language, block: learningBlocks[2], taskCount: 10, onTaskCountChange() {}, onContinue() {}, onRepeat() { repeated++; }, onReset() { reset++; } };
+    const tree = TrainingCard(props);
+    const button = findElements(tree, 'button').find(button => button.props.className === 'resetButton');
+    assert.ok(button);
+    button.props.onClick();
+    assert.equal(repeated, 1);
+    assert.equal(reset, 0);
+    assert.ok(renderToStaticMarkup(createElement(TrainingCard, props)).includes(label));
+  }
+});

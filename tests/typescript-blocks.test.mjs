@@ -41,3 +41,15 @@ test('completed blocks can be replayed without clearing progress or opening futu
   assert.equal(await loader(practice.tasks.length), undefined);
   assert.equal(done.completedTaskIds.length, block.tasks.length);
 });
+
+test('manual repeat includes completed exercises even in a partially completed block', async () => {
+  const { getBlockRepeatTasks } = load('src/learning/typescriptBlocks.ts');
+  const block = getTypeScriptBlocks(tasks, snapshot).find(block => block.tasks.filter(task => task.stage !== 'delayed-repetition').length > 1);
+  const repeatTasks = getBlockRepeatTasks(block.tasks);
+  const partial = { ...snapshot, completedTaskIds: [repeatTasks[0].id] };
+  const loader = createLearningLoader(repeatTasks, () => partial, repeatTasks[0].id, true);
+  assert.equal((await loader(0)).id, repeatTasks[0].id);
+  assert.ok(await loader(1));
+  assert.equal(partial.completedTaskIds.length, 1);
+  assert.ok(repeatTasks.every(task => task.stage !== 'delayed-repetition'));
+});

@@ -13,6 +13,8 @@ type TrainingCardProps = {
   onTaskCountChange: (count: SessionSize) => void;
   onContinue: () => void;
   onReset?: () => void;
+  onRepeat?: () => void;
+  repeatDisabled?: boolean;
   programmingLanguage?: "JavaScript" | "TypeScript";
   disabled?: boolean;
   note?: string;
@@ -26,6 +28,8 @@ function TrainingCard({
   onTaskCountChange,
   onContinue,
   onReset,
+  onRepeat,
+  repeatDisabled = false,
   programmingLanguage = "JavaScript",
   disabled = false,
   note,
@@ -64,20 +68,23 @@ function TrainingCard({
           max={100}
         />
 
-        {onReset && <div className="resetAction">
+        {(onRepeat || onReset) && <div className="resetAction">
           <button
             className="resetButton"
+            type="button"
+            disabled={repeatDisabled}
             onClick={() => {
+              if (onRepeat) { onRepeat(); return; }
               const confirmed = window.confirm(
-                "Möchtest du diesen Block wirklich neu starten?",
+                t.resetBlockConfirm,
               );
 
               if (confirmed) {
-                onReset();
+                onReset?.();
               }
             }}
           >
-            ↻ Wiederholen
+            ↻ {t.repeatBlock}
           </button>
         </div>}
       </div>
