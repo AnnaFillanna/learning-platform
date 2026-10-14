@@ -18,6 +18,7 @@ export type LearningBlock = {
 export type TrainingSession = {
   programmingLanguage?: ProgrammingLanguage;
   initialTaskId?: string;
+  repeatCompleted?: boolean;
   blockId: LearningBlock["id"];
-  taskCount: SessionSize;
+  taskCount: number;
 };

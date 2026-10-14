@@ -113,9 +113,9 @@ const handleResetBlock = () => {
         </section>
 
         <section className="dashboard">
-          {programmingLanguage === "typescript" ? <TypeScriptOverview language={language} onStart={(tasks, initialTaskId, count) => {
+          {programmingLanguage === "typescript" ? <TypeScriptOverview language={language} onStart={(tasks, initialTaskId, count, blockId, repeatCompleted) => {
             setLearningTasks(tasks);
-            setSession({ programmingLanguage: "typescript", blockId: "typescript", initialTaskId, taskCount: count });
+            setSession({ programmingLanguage: "typescript", blockId, repeatCompleted, initialTaskId, taskCount: Math.min(count, tasks.length) });
           }} /> : <>
           <TrainingCard
             language={language}

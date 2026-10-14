@@ -44,7 +44,7 @@ export default function TaskScreen({ onBack, language, session, learningTasks = 
   const active = useRef(true);
   const [states, setStates] = useState<Record<string, TaskSessionState>>({});
   const [loadTask] = useState<(index: number) => Promise<LearnerTask | undefined>>(() => isTS
-    ? createLearningLoader(learningTasks, () => loadLearningProgress(learningTasks).snapshot, session.initialTaskId)
+    ? createLearningLoader(learningTasks, () => loadLearningProgress(learningTasks).snapshot, session.initialTaskId, session.repeatCompleted)
     : createTaskLoader());
   useEffect(() => {
     active.current = true;

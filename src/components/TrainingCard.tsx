@@ -12,7 +12,11 @@ type TrainingCardProps = {
   taskCount: SessionSize;
   onTaskCountChange: (count: SessionSize) => void;
   onContinue: () => void;
-  onReset: () => void;
+  onReset?: () => void;
+  programmingLanguage?: "JavaScript" | "TypeScript";
+  disabled?: boolean;
+  note?: string;
+  actionLabel?: string;
 };
 
 function TrainingCard({
@@ -22,18 +26,22 @@ function TrainingCard({
   onTaskCountChange,
   onContinue,
   onReset,
+  programmingLanguage = "JavaScript",
+  disabled = false,
+  note,
+  actionLabel,
 }: TrainingCardProps) {
   const t = translations[language];
 
   return (
     <section className="trainingCard" aria-labelledby="training-title">
       <div className="trainingCardTop">
-        <span className="trainingBadge">JS</span>
+        <span className="trainingBadge">{programmingLanguage === "TypeScript" ? "TS" : "JS"}</span>
 
         <div>
           <p className="trainingLabel">{t.todaysTraining}</p>
           <h3 id="training-title">
-            JavaScript <span>·</span> {block.title}
+            {programmingLanguage} <span>·</span> {block.title}
           </h3>
         </div>
       </div>
@@ -56,7 +64,7 @@ function TrainingCard({
           max={100}
         />
 
-        <div className="resetAction">
+        {onReset && <div className="resetAction">
           <button
             className="resetButton"
             onClick={() => {
@@ -71,7 +79,7 @@ function TrainingCard({
           >
             ↻ Wiederholen
           </button>
-        </div>
+        </div>}
       </div>
 
       <fieldset className="sessionSelection">
@@ -97,10 +105,10 @@ function TrainingCard({
         </div>
       </fieldset>
 
-      <p className="sessionNote">{t.sessionScope}</p>
+      <p className="sessionNote">{note ?? t.sessionScope}</p>
 
-      <button className="continueButton" onClick={onContinue}>
-        {t.continue}
+      <button className="continueButton" disabled={disabled} onClick={onContinue}>
+        {actionLabel ?? t.continue}
         <span aria-hidden="true">→</span>
       </button>
     </section>

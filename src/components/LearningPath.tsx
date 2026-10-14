@@ -7,14 +7,15 @@ type LearningPathProps = {
   selectedBlockId: string;
   onSelectBlock: (id: string) => void;
   language: Language;
+  title?: string;
 };
 
-export default function LearningPath({ blocks, selectedBlockId, onSelectBlock, language }: LearningPathProps) {
+export default function LearningPath({ blocks, selectedBlockId, onSelectBlock, language, title }: LearningPathProps) {
   const t = translations[language];
   return (
     <section className="learningPath" aria-labelledby="learning-path-title">
       <header className="learningPathHeader">
-        <h3 id="learning-path-title">{t.learningPathTitle}</h3>
+        <h3 id="learning-path-title">{title ?? t.learningPathTitle}</h3>
       </header>
       <ol className="learningPathList">
         {blocks.map((block, index) => (

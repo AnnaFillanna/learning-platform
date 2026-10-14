@@ -1,25 +1,29 @@
-import { useEffect, useState } from "react";
-import { fetchLearningCatalog } from "../generator/learningClient";
-import { getPracticeReadiness, getTaskRequirements } from "../learning/nextTask";
-import { loadLearningProgress, getPlacement, savePlacement, deriveProgress } from "../progress/learningProgress";
-import { getAttempts } from "../progress/attemptStorage";
-import { skillRegistry } from "../skills/registry";
-import { learningTranslations } from "../i18n/learningTranslations";
-import { SESSION_SIZES, type SessionSize } from "../types/training";
-import type { Language } from "../types/task";
-import type { LearnerTask } from "../types/learnerTask";
+import { useEffect, useState } from 'react';
+import { fetchLearningCatalog } from '../generator/learningClient';
+import { loadLearningProgress } from '../progress/learningProgress';
+import { getTypeScriptBlocks, getBlockPractice } from '../learning/typescriptBlocks';
+import { learningTranslations } from '../i18n/learningTranslations';
+import type { SessionSize } from '../types/training';
+import type { Language } from '../types/task';
+import type { LearnerTask } from '../types/learnerTask';
+import TrainingCard from './TrainingCard';
+import LearningPath from './LearningPath';
 
-type Props = { language: Language; onStart: (tasks: LearnerTask[], initialTaskId: string, count: SessionSize) => void };
+type Props = { language: Language; onStart: (tasks: LearnerTask[], initialTaskId: string, count: SessionSize, blockId: string, repeat: boolean) => void };
+const labels = {
+  ru: { path: 'Твой путь TypeScript', later: 'Следующие разделы', repeat: 'Повторить блок', available: 'Доступно заданий в блоке', scope: 'Тренировка остаётся в выбранном блоке. Если заданий меньше выбранного числа, она завершится раньше.' },
+  de: { path: 'Dein TypeScript-Lernweg', later: 'Weitere Abschnitte', repeat: 'Block wiederholen', available: 'Verfügbare Aufgaben im Block', scope: 'Die Einheit bleibt im gewählten Block. Sind weniger Aufgaben verfügbar, endet sie früher.' },
+  en: { path: 'Your TypeScript learning path', later: 'Upcoming sections', repeat: 'Practise block again', available: 'Available tasks in this block', scope: 'Practice stays in the selected block. If fewer tasks are available, the session ends earlier.' },
+};
 
 export default function TypeScriptOverview({ language, onStart }: Props) {
   const t = learningTranslations[language];
+  const ui = labels[language];
   const [tasks, setTasks] = useState<LearnerTask[]>([]);
-  const [selectedId, setSelectedId] = useState("");
-  const [placement, setPlacement] = useState(getPlacement);
+  const [selectedId, setSelectedId] = useState('');
   const [count, setCount] = useState<SessionSize>(5);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [storageError, setStorageError] = useState(false);
   const [retry, setRetry] = useState(0);
   useEffect(() => {
     let active = true;
@@ -27,72 +31,34 @@ export default function TypeScriptOverview({ language, onStart }: Props) {
       if (!active) return;
       setTasks(catalog);
       const snapshot = loadLearningProgress(catalog).snapshot;
-      const available = catalog.find((task) => !snapshot.completedTaskIds.includes(task.id) && getPracticeReadiness(task, snapshot).eligible);
-      setSelectedId(available?.id ?? catalog[0]?.id ?? "");
+      const blocks = getTypeScriptBlocks(catalog, snapshot);
+      setSelectedId((blocks.find((block) => getBlockPractice(block.tasks, snapshot).tasks.length > 0 && block.completedTasks < block.tasks.length) ?? blocks.find((block) => block.tasks.length > 0))?.id ?? '');
       setLoading(false);
     }).catch(() => { if (active) { setError(true); setLoading(false); } });
     return () => { active = false; };
   }, [retry]);
-  const { snapshot } = deriveProgress(tasks, getAttempts(), placement);
-  const selected = tasks.find((task) => task.id === selectedId);
-  const readiness = selected ? getPracticeReadiness(selected, snapshot) : undefined;
-  const requirements = selected ? getTaskRequirements(selected) : { skills: [], knowledge: [] };
-  const placementSkills = requirements.skills.filter((id) => skillRegistry.get(id).programmingLanguage === "typescript");
-  const confirmedByPractice = new Set([...snapshot.masteredSkillIds, ...(snapshot.practicedSkillIds ?? [])]);
-  const due = selected?.topics.some((id) => snapshot.dueSkillIds.includes(id));
-  const ready = readiness?.eligible;
-  const map = skillRegistry.forLanguage("typescript");
-  return (
-    <>
-      <section className="trainingCard tsPractice" aria-labelledby="ts-practice-title">
-        <div className="trainingCardTop"><span className="trainingBadge">TS</span><h3 id="ts-practice-title">{t.title}</h3></div>
-        <p>{t.completed}: {snapshot.completedTaskIds.length} / {tasks.length}</p>
-        <p>{t.practiced}: {snapshot.practicedSkillIds?.filter((id) => id.startsWith("ts-")).length ?? 0} · {t.mastered}: {snapshot.masteredSkillIds.length}</p>
-        {loading && <p role="status">{t.loading}</p>}
-        {error && <div role="alert"><p>{t.unavailable}</p><button onClick={() => { setError(false); setLoading(true); setRetry((value) => value + 1); }}>{t.retry}</button></div>}
-        {selected && <>
-          <h3>{selected.content[language].title}</h3>
-          <p>{selected.content[language].description}</p>
-          <p>{ready ? t.ready : t.missing}</p>
-          {placementSkills.some((id) => !confirmedByPractice.has(id)) && <fieldset className="tsPlacement">
-            <legend>{t.placement}</legend><p>{t.placementHelp}</p>
-            {placementSkills.filter((id) => !confirmedByPractice.has(id)).map((id) => <label key={id}>
-              <input type="checkbox" checked={placement.includes(id)} onChange={(event) => {
-                const next = event.target.checked ? [...placement, id] : placement.filter((item) => item !== id);
-                setPlacement(next);
-                setStorageError(!savePlacement(next));
-              }} />{skillRegistry.get(id).programmingLanguage === "javascript" ? "JS · " : "TS · "}{skillRegistry.get(id).title}
-            </label>)}
-          </fieldset>}
-          {readiness?.missingKnowledge.length ? <p>{t.knowledge}: {readiness.missingKnowledge.join(", ")}</p> : null}
-          {selected.stage === "delayed-repetition" && !due && <p>{t.reviewWaiting}</p>}
-          <fieldset className="sessionSelection"><legend>{t.sessionSize}</legend><div className="sessionOptions">
-            {SESSION_SIZES.map((size) => <label key={size}><input type="radio" name="ts-session-size" value={size} checked={count === size} onChange={() => setCount(size)} /><span>{size}</span></label>)}
-          </div></fieldset>
-          <button className="continueButton" disabled={!ready} onClick={() => onStart(tasks, selected.id, count)}>{t.start} →</button>
-          {storageError && <p role="alert">{t.saveError}</p>}
-          <p className="sessionNote">{t.noMastery}</p>
-        </>}
-      </section>
-      <section className="learningPath" aria-labelledby="ts-map-title">
-        <header className="learningPathHeader"><h3 id="ts-map-title">{t.catalog}</h3></header>
-        <ol className="learningPathList">{tasks.map((task, index) => <li key={task.id}>
-          <button className="learningPathRow" aria-pressed={selectedId === task.id} onClick={() => setSelectedId(task.id)}>
-            <span className="learningPathNumber">{index + 1}</span><span className="learningPathDetails">
-              <span className="learningPathName">{task.content[language].title}</span>
-              <span className="learningPathDescription">{task.stage === "delayed-repetition" && !task.topics.some((id) => snapshot.dueSkillIds.includes(id)) ? t.reviewWaiting : snapshot.completedTaskIds.includes(task.id) ? t.completed : getPracticeReadiness(task, snapshot).eligible ? t.ready : t.prerequisites}{task.topics.some((id) => snapshot.dueSkillIds.includes(id)) ? ` · ${t.due}` : ""}</span>
-            </span>
-          </button>
-        </li>)}</ol>
-        <div className="tsMapSections">{map.sections.map((section) => <details key={section.id}>
-          <summary>{String(section.order).padStart(2, "0")} · {section.title}</summary>
-          {!tasks.some((task) => task.topics.some((id) => skillRegistry.get(id).sectionId === section.id)) && <p>{t.noExercises}</p>}
-          <ul>{map.skills.filter((skill) => skill.sectionId === section.id).map((skill) => <li key={skill.id}>
-            {skill.kind === "subskill" ? "↳ " : ""}{skill.title}
-            <small>{t.prerequisites}: {skill.prerequisites.map((id) => skillRegistry.get(id).title).join(", ")}</small>
-          </li>)}</ul>
-        </details>)}</div>
-      </section>
-    </>
-  );
+  const { snapshot } = loadLearningProgress(tasks);
+  const blocks = getTypeScriptBlocks(tasks, snapshot);
+  const available = blocks.filter((block) => block.tasks.length > 0);
+  const upcoming = blocks.filter((block) => block.tasks.length === 0);
+  const selected = available.find((block) => block.id === selectedId) ?? available[0];
+  const practice = getBlockPractice(selected?.tasks ?? [], snapshot);
+  if (loading || error) return <section className="trainingCard" aria-live="polite">
+    <h3>{t.title}</h3>{loading ? <p role="status">{t.loading}</p> : <><p role="alert">{t.unavailable}</p>
+      <button className="continueButton" onClick={() => { setError(false); setLoading(true); setRetry((value) => value + 1); }}>{t.retry}</button></>}
+  </section>;
+  return <>
+    {selected ? <TrainingCard language={language} programmingLanguage="TypeScript" block={selected} taskCount={count}
+      onTaskCountChange={setCount} disabled={!practice.tasks.length}
+      note={`${ui.available}: ${practice.tasks.length}. ${ui.scope}`}
+      actionLabel={practice.repeat ? ui.repeat : undefined}
+      onContinue={() => { if (practice.tasks[0]) onStart(practice.tasks, practice.tasks[0].id, count, selected.id, practice.repeat); }} />
+      : <section className="trainingCard"><h3>{t.title}</h3><p>{t.noExercises}</p></section>}
+    <div className="tsLearningOverview">
+      <LearningPath blocks={available} selectedBlockId={selected?.id ?? ''} onSelectBlock={setSelectedId} language={language} title={ui.path} />
+      {upcoming.length > 0 && <details className="tsUpcoming"><summary>{ui.later} · {upcoming.length}</summary>
+        <p>{t.noExercises}</p><ul>{upcoming.map((block) => <li key={block.id}>{block.title}</li>)}</ul>
+      </details>}
+    </div>
+  </>;
 }
