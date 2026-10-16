@@ -1003,8 +1003,12 @@ button {
 }
 
 .tsLearningOverview { min-width: 0; }
-.tsUpcoming { margin-top: 12px; padding: 14px; border: 1px solid rgba(255,255,255,.1); border-radius: 12px; color: var(--text); font-size: 13px; }
-.tsUpcoming summary { cursor: pointer; }
+.tsUpcoming { margin-top: 12px; color: var(--text); font-size: 13px; }
+.tsUpcoming summary { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin-inline: auto; border: 1px solid rgba(255,255,255,.1); border-radius: 50%; cursor: pointer; list-style: none; }
+.tsUpcoming summary::-webkit-details-marker { display: none; }
+.tsUpcoming summary:hover { background: rgba(255,255,255,.08); }
+.tsUpcoming summary:focus-visible { outline: 2px solid #9c8cff; outline-offset: 3px; }
+.tsUpcoming[open] .tsUpcomingArrow { transform: rotate(180deg); }
 .tsUpcoming ul { padding-left: 20px; line-height: 1.8; }
 
 button.technicalTerm {

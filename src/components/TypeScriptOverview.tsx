@@ -59,7 +59,9 @@ export default function TypeScriptOverview({ language, onStart }: Props) {
       : <section className="trainingCard"><h3>{t.title}</h3><p>{t.noExercises}</p></section>}
     <div className="tsLearningOverview">
       <LearningPath blocks={available} selectedBlockId={selected?.id ?? ''} onSelectBlock={setSelectedId} language={language} title={ui.path} />
-      {upcoming.length > 0 && <details className="tsUpcoming"><summary>{ui.later} · {upcoming.length}</summary>
+      {upcoming.length > 0 && <details className="tsUpcoming"><summary aria-label={`${ui.later} · ${upcoming.length}`} title={`${ui.later} · ${upcoming.length}`}>
+        <svg className="tsUpcomingArrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+      </summary>
         <p>{t.noExercises}</p><ul>{upcoming.map((block) => <li key={block.id}>{block.title}</li>)}</ul>
       </details>}
     </div>
