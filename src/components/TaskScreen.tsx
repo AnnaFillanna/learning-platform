@@ -1,6 +1,8 @@
 import { TechnicalText } from "./TechnicalText";
 import { editorTermAtPoint } from "../glossary/editorTermAtPoint";
 import { useEffect, useRef, useState } from "react";
+import { createInstantTaskLoader } from "../generator/instantTaskLoader";
+import { createInstantJavascriptTask } from "../tasks/instantJavascriptTask";
 import { createTaskLoader } from "../generator/taskLoader";
 import { createLearningLoader } from "../generator/learningLoader";
 import { fetchSolution } from "../generator/learningClient";
@@ -45,7 +47,7 @@ export default function TaskScreen({ onBack, language, session, learningTasks = 
   const [states, setStates] = useState<Record<string, TaskSessionState>>({});
   const [loadTask] = useState<(index: number) => Promise<LearnerTask | undefined>>(() => isTS
     ? createLearningLoader(learningTasks, () => loadLearningProgress(learningTasks).snapshot, session.initialTaskId, session.repeatCompleted)
-    : createTaskLoader());
+    : createInstantTaskLoader(createTaskLoader(), createInstantJavascriptTask, session.taskCount));
   useEffect(() => {
     active.current = true;
     return () => { active.current = false; };
@@ -57,7 +59,7 @@ export default function TaskScreen({ onBack, language, session, learningTasks = 
       if (first) setTasks([first]);
       else { setExhausted(true); setSessionComplete(true); }
       setIsGenerating(false);
-      if (!isTS) void loadTask(1).catch(() => {});
+
     }).catch(() => {
       if (mounted) { setGenerationError(lt.unavailable); setIsGenerating(false); }
     });
@@ -80,7 +82,7 @@ export default function TaskScreen({ onBack, language, session, learningTasks = 
       if (!next) { setExhausted(true); setSessionComplete(true); return; }
       setTasks((previous) => [...previous, next]);
       setIndex(nextIndex);
-      if (!isTS && nextIndex + 1 < session.taskCount) void loadTask(nextIndex + 1).catch(() => {});
+
     } catch { if (active.current) setGenerationError(lt.unavailable); }
     finally { if (active.current) setIsGenerating(false); }
   }
