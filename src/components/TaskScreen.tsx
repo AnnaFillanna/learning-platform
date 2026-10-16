@@ -1,3 +1,4 @@
+import FilliChat from "./FilliChat";
 import { TechnicalText } from "./TechnicalText";
 import { editorTermAtPoint } from "../glossary/editorTermAtPoint";
 import { useEffect, useRef, useState } from "react";
@@ -19,11 +20,11 @@ import type { TrainingSession } from "../types/training";
 type TaskScreenProps = { session: TrainingSession; onBack: () => void; language: Language; learningTasks?: LearnerTask[] };
 type TaskSessionState = {
   code: string; result: string; isSolved: boolean; visibleHints: number;
-  showSolution: boolean; solution: string; output: unknown; attempts: number;
+  chatHints: number; showSolution: boolean; solution: string; output: unknown; attempts: number;
   error: { name: string; message: string } | null;
 };
 function initialState(task: LearnerTask): TaskSessionState {
-  return { code: task.starterCode, result: "", isSolved: false, visibleHints: 0, showSolution: false, solution: "", output: null, error: null, attempts: 0 };
+  return { code: task.starterCode, result: "", isSolved: false, visibleHints: 0, chatHints: 0, showSolution: false, solution: "", output: null, error: null, attempts: 0 };
 }
 function formatOutput(value: unknown): string {
   if (value === undefined) return "undefined";
@@ -104,7 +105,7 @@ export default function TaskScreen({ onBack, language, session, learningTasks = 
         topic: task.topics[0] ?? "", topics: task.topics, difficulty: task.difficulty,
         stage: task.stage, context: task.context,
         dimensions: Object.fromEntries((task.dimensions ?? []).map((dimension) => [dimension, checked.success && !state.showSolution ? 1 : 0])),
-        solved: checked.success, attempts, hintsUsed: state.visibleHints, solutionViewed: state.showSolution, createdAt: new Date().toISOString(),
+        solved: checked.success, attempts, hintsUsed: state.visibleHints + state.chatHints, solutionViewed: state.showSolution, createdAt: new Date().toISOString(),
       }));
     } catch { if (active.current) setGenerationError(lt.checkUnavailable); }
     finally { busyRef.current = false; if (active.current) setBusy(false); }
@@ -143,7 +144,11 @@ export default function TaskScreen({ onBack, language, session, learningTasks = 
     </header>
     <div className="taskLayout">
       <div className="taskInfoColumn">
-      <button className="taskBrand" title={t.hint} aria-label={`Filli: ${t.hint}`} aria-controls="task-hints" disabled={busy || state.visibleHints >= task.content[language].hints.length} onClick={() => update(task, { visibleHints: state.visibleHints + 1 })}><span aria-hidden="true">🐱</span><strong>Filli</strong></button>
+      <FilliChat key={task.id} language={language} context={{
+        taskId: task.id, programmingLanguage: task.programmingLanguage,
+        description: task.content[language].description.slice(0, 6000), displayCode: (task.displayCode ?? "").slice(0, 12000),
+        code: state.code.slice(0, 20000), feedback: (state.error ? `${state.error.name}: ${state.error.message}` : state.result).slice(0, 4000),
+      }} onHelp={() => update(task, { chatHints: state.chatHints + 1 })} />
       <section className="taskInfo">
         <div className="taskBreadcrumb"><span>{isTS ? "TS" : "JS"}</span>{task.programmingLanguage} · {task.category}</div>
         <h1>{t.task} {index + 1}</h1>
@@ -152,7 +157,7 @@ export default function TaskScreen({ onBack, language, session, learningTasks = 
         {isTS && <details className="taskExample"><summary>{lt.visibleTests}</summary>{task.visibleTests?.map((check) => <pre key={check.id}><code><TechnicalText language={language}>{check.kind === "type" ? check.code : `${check.expression}\n→ ${formatOutput(check.expected)}`}</TechnicalText></code></pre>)}</details>}
         <div className="hintSection" id="task-hints" aria-live="polite">
           {task.content[language].hints.slice(0, state.visibleHints).map((hint, i) => <div className="hintCard" key={i}><span>{i + 1}</span><p><TechnicalText language={language}>{hint}</TechnicalText></p></div>)}
-          {state.visibleHints === task.content[language].hints.length && !state.showSolution && <button className="solutionButton" disabled={busy} onClick={() => void showSolution()}>{lt.solution}</button>}
+          {state.visibleHints + state.chatHints >= task.content[language].hints.length && !state.showSolution && <button className="solutionButton" disabled={busy} onClick={() => void showSolution()}>{lt.solution}</button>}
           {state.showSolution && <div className="solutionCard"><div className="taskExampleHeader">{lt.solutionTitle}</div><pre><code><TechnicalText language={language}>{state.solution}</TechnicalText></code></pre></div>}
         </div>
         {index > 0 && <button className="previousButton" disabled={busy} onClick={() => setIndex((value) => value - 1)}>{t.previousTask}</button>}

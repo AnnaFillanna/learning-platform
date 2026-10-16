@@ -8,6 +8,9 @@
   "functions": {
     "api/learning.ts": {
       "includeFiles": "node_modules/typescript/lib/lib*.d.ts"
+    },
+    "api/filli.ts": {
+      "maxDuration": 30
     }
   }
 }

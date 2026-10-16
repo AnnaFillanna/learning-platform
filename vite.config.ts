@@ -6,7 +6,7 @@ function learningApi(): Plugin {
   return {
     name: "pet-learning-api",
     configureServer(server) {
-      server.middlewares.use("/api/learning", async (req, res) => {
+      for (const route of ["/api/learning", "/api/filli"]) server.middlewares.use(route, async (req, res) => {
         res.setHeader("Content-Type", "application/json");
         if (req.method !== "POST") {
           res.statusCode = 405;
@@ -27,8 +27,10 @@ function learningApi(): Plugin {
         req.on("end", async () => {
           if (tooLarge) return;
           try {
-            const { handleLearning } = await server.ssrLoadModule("/server/learningHandler.ts");
-            const result = handleLearning(JSON.parse(body));
+            const handler = route === "/api/filli"
+              ? (await server.ssrLoadModule("/server/filliHandler.ts")).handleFilli
+              : (await server.ssrLoadModule("/server/learningHandler.ts")).handleLearning;
+            const result = await handler(JSON.parse(body));
             res.statusCode = result.status;
             res.end(JSON.stringify(result.body));
           } catch {

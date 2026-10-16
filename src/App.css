@@ -1091,3 +1091,36 @@ button.technicalTerm {
 .taskExample summary { padding: 12px 16px; cursor: pointer; }
 
 .hintSection:empty { margin-top: 0; }
+
+/* Filli's inline chat keeps the exercise and editor available. */
+.taskBrand .filliChatBadge { font-size: 15px; color: var(--accent); }
+.filliChat {
+  min-width: 0;
+  border: 1px solid #465d76;
+  border-radius: 16px;
+  background: linear-gradient(165deg, var(--card-top), var(--card-bottom));
+  box-shadow: 0 10px 24px #0004;
+  overflow: hidden;
+}
+.filliChat[hidden] { display: none; }
+.filliChatHeader { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; border-bottom: 1px solid #ffffff12; }
+.filliChatHeader strong { font-size: 17px; }
+.filliChatHeader small { display: block; margin-top: 4px; color: #a8b7c8; }
+.filliChatHeader button { background: transparent; border: 0; color: var(--text); font-size: 26px; width: 36px; height: 36px; cursor: pointer; }
+.filliMessages { max-height: 340px; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; overscroll-behavior: contain; }
+.filliMessage { background: #1b242f; padding: 12px 14px; border-radius: 12px; font-size: 14px; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.filliMessage small { display: block; color: #b8cfe9; font-weight: 600; margin-bottom: 4px; }
+.filliMessage-user { background: #344b64; margin-left: 24px; }
+.filliMessage pre { white-space: pre; overflow-x: auto; max-width: 100%; background: #131b24; padding: 10px; border-radius: 8px; font-size: 12px; }
+.filliThinking { color: #b8cfe9; font-size: 13px; margin: 0; }
+.filliSuggestions { display: flex; gap: 8px; flex-wrap: wrap; padding: 0 16px 12px; }
+.filliSuggestions button, .filliChatError button { border: 1px solid #607791; background: #2b3c50; color: var(--text); border-radius: 10px; padding: 9px 12px; cursor: pointer; font-size: 12px; }
+.filliChat form { padding: 0 16px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+.filliChat textarea { width: 100%; resize: vertical; min-height: 78px; max-height: 200px; background: #18222d; color: var(--text); border: 1px solid #50647b; border-radius: 10px; padding: 12px; font: inherit; font-size: 14px; }
+.filliChat textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.filliChat textarea::placeholder { color: #a8b7c8; }
+.filliChatNote { font-size: 11px; line-height: 1.5; color: #a8b7c8; margin: 12px 16px 16px; }
+.filliChatError { padding: 0 16px 12px; color: #ffb1b9; font-size: 13px; }
+.filliChatError button { display: block; margin-top: 8px; }
+.taskInfoColumn > .taskInfo { order: 1; }
+.taskInfoColumn > .filliChat { order: 2; }
