@@ -137,10 +137,11 @@ export default function TaskScreen({ onBack, language, session, learningTasks = 
   return <main className="taskPage">
     <header className="taskHeader">
       <button className="backButton" disabled={busy} onClick={onBack}>← {t.back}</button>
-      <div className="taskBrand"><span>🐱</span><strong>Pet</strong></div>
       <div className="taskCounter">{t.sessionLabel} · {index + 1} / {session.taskCount}</div>
     </header>
     <div className="taskLayout">
+      <div className="taskInfoColumn">
+      <div className="taskBrand"><span aria-hidden="true">🐱</span><strong>Cat</strong></div>
       <section className="taskInfo">
         <div className="taskBreadcrumb"><span>{isTS ? "TS" : "JS"}</span>{task.programmingLanguage} · {task.category}</div>
         <h1>{t.task} {index + 1}</h1>
@@ -155,6 +156,7 @@ export default function TaskScreen({ onBack, language, session, learningTasks = 
         </div>
         {index > 0 && <button className="previousButton" disabled={busy} onClick={() => setIndex((value) => value - 1)}>{t.previousTask}</button>}
       </section>
+      </div>
       <section className="codeWorkspace">
         <div className="editorHeader"><div className="editorDots"><span /><span /><span /></div><span>{isTS ? "solution.ts" : "solution.js"}</span></div>
         <textarea className="codeEditor" aria-label={isTS ? "TypeScript code" : "JavaScript code"} value={state.code} readOnly={busy}
