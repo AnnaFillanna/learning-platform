@@ -7,10 +7,16 @@ const filliWords = {
   ru: { welcome: "Не получается? Нажми на меня, я помогу!", hint: "Вот маленькая подсказка…", next: "Нажми на меня ещё раз — подскажу дальше", last: "Попробуй. Я рядом!", offer: "Всё ещё сложно? Давай посмотрим решение вместе.", solution: "Посмотреть решение", bored: "М-м… я тут, жду тебя.", reading: "Пока почитаю. Нажми на меня, если понадоблюсь!", label: "Попросить подсказку у Filli", count: "Подсказка", done: "Теперь можно спокойно попробовать решение." },
   en: { welcome: "Stuck? Tap me, I'll help you!", hint: "Here's a little hint…", next: "Tap me again for the next hint", last: "Give it a try. I'm here!", offer: "Still tricky? We can look at the solution together.", solution: "Look at the solution", bored: "Hmm … I'll wait here for you.", reading: "I'll read a little. Tap me when you need me!", label: "Ask Filli for a hint", count: "Hint", done: "Now you can take your time trying the solution." },
 };
-export default function FilliCompanion({ language, hints, visibleHints, onHint, onSolution, solutionShown, busy }: {
-  language: Language; hints: string[]; visibleHints: number; onHint: () => void;
-  onSolution: () => void; solutionShown: boolean; busy: boolean;
-}) {
+const homeWords = {
+  de: { label: "Filli begrüßen", messages: ["Hallo, ich bin Filli! Schön, dass du da bist. Lernen wir zusammen?", "Wähle dein Training. Wenn du nicht weiterkommst, klick mich in der Aufgabe an!", "Ein kleiner Schritt reicht für den Anfang. Ich bin an deiner Seite!"] },
+  en: { label: "Say hello to Filli", messages: ["Hi, I'm Filli! It's lovely to see you. Shall we learn together?", "Choose your training. If you get stuck, tap me in the exercise!", "One small step is enough to get started. I'm here for you!"] },
+  ru: { label: "Поздороваться с Filli", messages: ["Привет, я Filli! Рад тебя видеть. Давай учиться вместе?", "Выбирай тренировку. Если станет сложно, нажми на меня в задании!", "Начни с маленького шага. Я рядом и помогу тебе!"] },
+};
+type CompanionProps = { language: Language } & (
+  { mode: "home"; hints?: never; visibleHints?: never; onHint?: never; onSolution?: never; solutionShown?: never; busy?: never } |
+  { mode?: "task"; hints: string[]; visibleHints: number; onHint: () => void; onSolution: () => void; solutionShown: boolean; busy: boolean }
+);
+export default function FilliCompanion({ language, mode = "task", hints = [], visibleHints = 0, onHint, onSolution, solutionShown = false, busy = false }: CompanionProps) {
   const t = filliWords[language];
   const [mood, setMood] = useState("awake");
   const [interaction, setInteraction] = useState(0);
@@ -22,19 +28,20 @@ export default function FilliCompanion({ language, hints, visibleHints, onHint, 
   }, [interaction]);
   function greet() {
     setMood("awake"); setInteraction((value) => value + 1);
-    if (visibleHints < hints.length) onHint();
+    if (mode === "home") return;
+    if (visibleHints < hints.length) onHint?.();
     else setOffer(true);
   }
-  const greeting = mood === "reading" ? t.reading : mood === "bored" ? t.bored : t.welcome;
-  return <div className={`filliCompanion filli-${mood}`}>
+  const greeting = mood === "reading" ? t.reading : mood === "bored" ? t.bored : mode === "home" ? homeWords[language].messages[interaction % homeWords[language].messages.length] : t.welcome;
+  return <div className={`filliCompanion filli-${mood}${mode === "home" ? " filliHome" : ""}`}>
     <div className="filliBubble" id="filli-speech" role="status" aria-live="polite" aria-atomic="true">
-      {solutionShown ? <p>{t.done}</p> : offer ? <><p>{t.offer}</p><button disabled={busy} onClick={onSolution}>{t.solution} ↗</button></> : visibleHints > 0 ? <>
+      {mode === "home" ? <p>{greeting}</p> : solutionShown ? <p>{t.done}</p> : offer ? <><p>{t.offer}</p><button disabled={busy} onClick={onSolution}>{t.solution} ↗</button></> : visibleHints > 0 ? <>
         <small>{t.count} {visibleHints} / {hints.length}</small>
         <p><TechnicalText language={language}>{hints[visibleHints - 1]}</TechnicalText></p>
         <span className="filliBubblePrompt">{visibleHints < hints.length ? t.next : t.last}</span>
       </> : <p>{greeting}</p>}
     </div>
-    <button className="filliCatButton" aria-label={t.label} aria-describedby="filli-speech" disabled={busy} onClick={greet}>
+    <button className="filliCatButton" aria-label={mode === "home" ? homeWords[language].label : t.label} aria-describedby="filli-speech" disabled={busy} onClick={greet}>
       <svg className="filliCat" viewBox="0 0 110 120" aria-hidden="true">
         <path className="filliTail" d="M75 98 Q105 103 98 73" fill="none" stroke="#dca246" strokeWidth="11" strokeLinecap="round" />
         <ellipse cx="54" cy="88" rx="27" ry="27" fill="#e8b253" />

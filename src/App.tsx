@@ -1,3 +1,4 @@
+import FilliCompanion from "./components/FilliCompanion";
 import "./App.css";
 import { useState } from "react";
 
@@ -102,14 +103,7 @@ const handleResetBlock = () => {
             <h2>{t.readyToPractice}</h2>
           </div>
 
-          <div className="catArea">
-            <div className="catPlaceholder">🐱</div>
-
-            <div className="catMessage">
-              Hey ich bin Filli🐾
-              <span>Klick mich bei einer Aufgabe an</span>
-            </div>
-          </div>
+          <FilliCompanion mode="home" language={language} />
         </section>
 
         <section className="dashboard">

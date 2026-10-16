@@ -26,3 +26,16 @@ test("the invitation follows the interface language", () => {
   assert.match(render(0, "ru"), /Нажми на меня/);
   assert.match(render(0, "en"), /Tap me/);
 });
+test("home companion greets in each selected language without task controls", () => {
+  for (const [language, greeting, label] of [
+    ["de", "Hallo, ich bin Filli!", "Filli begrüßen"],
+    ["en", "Hi, I&#x27;m Filli!", "Say hello to Filli"],
+    ["ru", "Привет, я Filli!", "Поздороваться с Filli"],
+  ]) {
+    const html = renderToStaticMarkup(createElement(Companion, { language, mode: "home" }));
+    assert.ok(html.includes(greeting));
+    assert.ok(html.includes(label));
+    assert.match(html, /filliHome/);
+    assert.doesNotMatch(html, /Lösung anschauen|First clue|textarea/);
+  }
+});

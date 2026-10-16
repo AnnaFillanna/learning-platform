@@ -124,37 +124,6 @@ button {
   text-shadow: 0 3px 10px rgba(0, 0, 0, 0.55);
 }
 
-.catArea {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.catPlaceholder {
-  font-size: 70px;
-  line-height: 1;
-  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.55));
-}
-
-.catMessage {
-  padding: 7px 11px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
-  background: linear-gradient(165deg, var(--card-top), var(--card-bottom));
-  box-shadow:
-    0 4px 10px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  color: var(--text);
-  font-size: 11px;
-}
-
-.catMessage span {
-  display: block;
-  margin-top: 2px;
-  color: var(--subtext);
-  font-size: 10px;
-}
-
 .dashboard {
   display: grid;
   grid-template-columns: minmax(0, 1.6fr) minmax(330px, 0.9fr);
@@ -515,9 +484,6 @@ button {
     align-items: flex-start;
   }
 
-  .catMessage {
-    display: none;
-  }
 }
 
 .consoleOutput {
@@ -1148,3 +1114,13 @@ button.technicalTerm {
 @keyframes filli-blink { 0%, 94%, 98%, 100% { opacity: 1; } 96% { opacity: .1; } }
 @media (prefers-reduced-motion: reduce) { .filliEyes { animation: none; } .filliCat, .filliBook { transition: none; } }
 @media (max-width: 600px) { .filliCompanion { gap: 13px; } .filliBubble { padding: 15px; } .filliCatButton { flex-basis: 68px; } .filliCat { width: 68px; height: 84px; } }
+
+.filliHome { width: min(100%, 440px); flex-shrink: 0; }
+.filliCatButton:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+@media (max-width: 900px) {
+  .heroTop { flex-wrap: wrap; }
+  .filliHome { margin-left: auto; }
+}
+@media (max-width: 600px) {
+  .filliHome { width: 100%; }
+}
