@@ -1124,3 +1124,27 @@ button.technicalTerm {
 .filliChatError button { display: block; margin-top: 8px; }
 .taskInfoColumn > .taskInfo { order: 1; }
 .taskInfoColumn > .filliChat { order: 2; }
+
+/* A small companion and speech bubble, rather than a chat panel. */
+.filliCompanion { display: flex; align-items: center; gap: 18px; min-width: 0; padding: 0 2px 4px; }
+.filliBubble { position: relative; flex: 1; min-width: 0; padding: 18px 20px; border-radius: 25px; background: #dce7f4; color: #26374b; box-shadow: 0 5px 18px #0002; }
+.filliBubble::after { content: ""; position: absolute; right: -10px; top: 50%; width: 20px; height: 20px; background: #dce7f4; transform: translateY(-50%) rotate(45deg); border-radius: 0 5px 0 0; }
+.filliBubble p { margin: 0; font-size: 14px; line-height: 1.6; overflow-wrap: anywhere; }
+.filliBubble small { display: block; color: #526b86; font-size: 11px; margin-bottom: 6px; }
+.filliBubblePrompt { display: block; margin-top: 10px; color: #526b86; font-size: 11px; line-height: 1.5; }
+.filliBubble > button { margin-top: 12px; padding: 8px 12px; border-radius: 12px; border: 1px solid #91a9c3; background: #c0d3e9; color: #24374d; font-size: 13px; cursor: pointer; }
+.filliCatButton { flex: 0 0 86px; align-self: center; padding: 0; border: 0; background: transparent; color: var(--text); cursor: pointer; border-radius: 22px; }
+.filliCatButton > span { display: block; font-size: 14px; font-weight: 600; margin-top: 2px; }
+.filliMoodMark { color: var(--accent); }
+.filliCat { width: 86px; height: 98px; overflow: visible; transition: transform .35s ease; }
+.filliCatButton:hover .filliCat { transform: translateY(-4px) rotate(-3deg); }
+.filliCatButton:active .filliCat { transform: translateY(2px); }
+.filliBook { opacity: 0; transition: opacity .6s ease; }
+.filli-reading .filliBook { opacity: 1; }
+.filli-bored .filliCat { transform: translateY(4px) rotate(5deg); }
+.filli-reading .filliCat { transform: translateY(4px); }
+.filli-bored .filliEyes { transform: scaleY(.5); transform-origin: 55px 48px; }
+.filliEyes { animation: filli-blink 7s infinite; transform-origin: 55px 48px; }
+@keyframes filli-blink { 0%, 94%, 98%, 100% { opacity: 1; } 96% { opacity: .1; } }
+@media (prefers-reduced-motion: reduce) { .filliEyes { animation: none; } .filliCat, .filliBook { transition: none; } }
+@media (max-width: 600px) { .filliCompanion { gap: 13px; } .filliBubble { padding: 15px; } .filliCatButton { flex-basis: 68px; } .filliCat { width: 68px; height: 84px; } }

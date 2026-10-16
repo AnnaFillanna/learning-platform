@@ -1,4 +1,4 @@
-import FilliChat from "./FilliChat";
+import FilliCompanion from "./FilliCompanion";
 import { TechnicalText } from "./TechnicalText";
 import { editorTermAtPoint } from "../glossary/editorTermAtPoint";
 import { useEffect, useRef, useState } from "react";
@@ -144,11 +144,10 @@ export default function TaskScreen({ onBack, language, session, learningTasks = 
     </header>
     <div className="taskLayout">
       <div className="taskInfoColumn">
-      <FilliChat key={task.id} language={language} context={{
-        taskId: task.id, programmingLanguage: task.programmingLanguage,
-        description: task.content[language].description.slice(0, 6000), displayCode: (task.displayCode ?? "").slice(0, 12000),
-        code: state.code.slice(0, 20000), feedback: (state.error ? `${state.error.name}: ${state.error.message}` : state.result).slice(0, 4000),
-      }} onHelp={() => update(task, { chatHints: state.chatHints + 1 })} />
+      <FilliCompanion key={task.id} language={language} hints={task.content[language].hints}
+        visibleHints={state.visibleHints} busy={busy} solutionShown={state.showSolution}
+        onHint={() => update(task, { visibleHints: Math.min(state.visibleHints + 1, task.content[language].hints.length) })}
+        onSolution={() => void showSolution()} />
       <section className="taskInfo">
         <div className="taskBreadcrumb"><span>{isTS ? "TS" : "JS"}</span>{task.programmingLanguage} · {task.category}</div>
         <h1>{t.task} {index + 1}</h1>
@@ -156,8 +155,6 @@ export default function TaskScreen({ onBack, language, session, learningTasks = 
         {(!isTS || task.displayCode) && <div className="taskExample"><div className="taskExampleHeader"><TechnicalText language={language}>Input</TechnicalText></div><pre><code><TechnicalText language={language}>{task.displayCode ?? ""}</TechnicalText></code></pre></div>}
         {isTS && <details className="taskExample"><summary>{lt.visibleTests}</summary>{task.visibleTests?.map((check) => <pre key={check.id}><code><TechnicalText language={language}>{check.kind === "type" ? check.code : `${check.expression}\n→ ${formatOutput(check.expected)}`}</TechnicalText></code></pre>)}</details>}
         <div className="hintSection" id="task-hints" aria-live="polite">
-          {task.content[language].hints.slice(0, state.visibleHints).map((hint, i) => <div className="hintCard" key={i}><span>{i + 1}</span><p><TechnicalText language={language}>{hint}</TechnicalText></p></div>)}
-          {state.visibleHints + state.chatHints >= task.content[language].hints.length && !state.showSolution && <button className="solutionButton" disabled={busy} onClick={() => void showSolution()}>{lt.solution}</button>}
           {state.showSolution && <div className="solutionCard"><div className="taskExampleHeader">{lt.solutionTitle}</div><pre><code><TechnicalText language={language}>{state.solution}</TechnicalText></code></pre></div>}
         </div>
         {index > 0 && <button className="previousButton" disabled={busy} onClick={() => setIndex((value) => value - 1)}>{t.previousTask}</button>}
