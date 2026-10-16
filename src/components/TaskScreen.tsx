@@ -143,15 +143,14 @@ export default function TaskScreen({ onBack, language, session, learningTasks = 
     </header>
     <div className="taskLayout">
       <div className="taskInfoColumn">
-      <div className="taskBrand"><span aria-hidden="true">🐱</span><strong>Cat</strong></div>
+      <button className="taskBrand" title={t.hint} aria-label={`Filli: ${t.hint}`} aria-controls="task-hints" disabled={busy || state.visibleHints >= task.content[language].hints.length} onClick={() => update(task, { visibleHints: state.visibleHints + 1 })}><span aria-hidden="true">🐱</span><strong>Filli</strong></button>
       <section className="taskInfo">
         <div className="taskBreadcrumb"><span>{isTS ? "TS" : "JS"}</span>{task.programmingLanguage} · {task.category}</div>
         <h1>{t.task} {index + 1}</h1>
         <p className="taskDescription"><TechnicalText language={language}>{task.content[language].description}</TechnicalText></p>
         {(!isTS || task.displayCode) && <div className="taskExample"><div className="taskExampleHeader"><TechnicalText language={language}>Input</TechnicalText></div><pre><code><TechnicalText language={language}>{task.displayCode ?? ""}</TechnicalText></code></pre></div>}
         {isTS && <details className="taskExample"><summary>{lt.visibleTests}</summary>{task.visibleTests?.map((check) => <pre key={check.id}><code><TechnicalText language={language}>{check.kind === "type" ? check.code : `${check.expression}\n→ ${formatOutput(check.expected)}`}</TechnicalText></code></pre>)}</details>}
-        <div className="hintSection">
-          <button className="hintButton" disabled={busy || state.visibleHints >= task.content[language].hints.length} onClick={() => update(task, { visibleHints: state.visibleHints + 1 })}>💡 {t.hint}</button>
+        <div className="hintSection" id="task-hints" aria-live="polite">
           {task.content[language].hints.slice(0, state.visibleHints).map((hint, i) => <div className="hintCard" key={i}><span>{i + 1}</span><p><TechnicalText language={language}>{hint}</TechnicalText></p></div>)}
           {state.visibleHints === task.content[language].hints.length && !state.showSolution && <button className="solutionButton" disabled={busy} onClick={() => void showSolution()}>{lt.solution}</button>}
           {state.showSolution && <div className="solutionCard"><div className="taskExampleHeader">{lt.solutionTitle}</div><pre><code><TechnicalText language={language}>{state.solution}</TechnicalText></code></pre></div>}
