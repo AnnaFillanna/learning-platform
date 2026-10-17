@@ -8,13 +8,13 @@ const { validateTasks } = load("src/learning/validateTasks.ts");
 const { learningStages } = load("src/types/skill.ts");
 const tasks = getTasks("typescript");
 
-test("one catalog supports unchanged JS tasks and 18 localized TS tasks", () => {
+test("one catalog supports unchanged JS tasks and 36 localized TS tasks", () => {
   assert.deepEqual(plain(programmingLanguages), ["javascript", "typescript"]);
   assert.equal(getTasks("javascript").length, 3);
-  assert.equal(tasks.length, 18);
+  assert.equal(tasks.length, 36);
   assert.deepEqual(plain(validateTasks(taskCatalog)), []);
   assert.deepEqual(new Set(tasks.map((task) => task.stage)), new Set(learningStages));
-  assert.equal(new Set(tasks.map((task) => task.context)).size, 18);
+  assert.equal(new Set(tasks.map((task) => task.context)).size, 36);
   for (const task of tasks) {
     assert.ok(task.topics.length > 1);
     assert.ok(task.visibleTests.length && task.hiddenTests.length);
@@ -62,4 +62,12 @@ test("catalog validation catches broken topics, translations and test partitions
   assert.ok(errors.some((message) => message.includes("Incomplete ru")));
   assert.ok(errors.some((message) => message.includes("Repeated visible/hidden")));
   assert.ok(errors.some((message) => message.includes("Missing strict")));
+});
+
+test('new practice requires solving the exercise: starter code never passes', () => {
+  const additional = tasks.filter(task => task.id.startsWith('ts-practice-'));
+  assert.equal(additional.length, 18);
+  for (const task of additional) {
+    assert.throws(() => checkReference({ ...task, solution: task.starterCode }), undefined, task.id);
+  }
 });

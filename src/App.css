@@ -1009,7 +1009,10 @@ button {
 .tsUpcoming summary:hover { background: rgba(255,255,255,.08); }
 .tsUpcoming summary:focus-visible { outline: 2px solid #9c8cff; outline-offset: 3px; }
 .tsUpcoming[open] .tsUpcomingArrow { transform: rotate(180deg); }
-.tsUpcoming ul { padding-left: 20px; line-height: 1.8; }
+.tsUpcomingContent { max-height: min(360px, 50dvh); overflow-y: auto; overscroll-behavior-y: contain; scrollbar-gutter: stable; margin-top: 12px; padding: 0 14px; border: 1px solid rgba(255,255,255,.1); border-radius: 12px; }
+.tsUpcomingContent:focus-visible { outline: 2px solid #9c8cff; outline-offset: 3px; }
+.tsUpcomingContent .learningPath { padding: 12px 0; border: 0; background: transparent; box-shadow: none; }
+.tsUpcomingContent .learningPathList { max-height: none; overflow: visible; }
 
 button.technicalTerm {
   display: inline; padding: 0; margin: 0; border: 0; border-radius: 0;

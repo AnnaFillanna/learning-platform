@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { fetchLearningCatalog } from '../generator/learningClient';
 import { loadLearningProgress } from '../progress/learningProgress';
-import { getTypeScriptBlocks, getBlockPractice, getBlockRepeatTasks } from '../learning/typescriptBlocks';
+import { getTypeScriptBlocks, getBlockPractice, getBlockRepeatTasks, primaryTypeScriptSectionIds } from '../learning/typescriptBlocks';
 import { learningTranslations } from '../i18n/learningTranslations';
 import type { SessionSize } from '../types/training';
 import type { Language } from '../types/task';
@@ -40,7 +40,8 @@ export default function TypeScriptOverview({ language, onStart }: Props) {
   const { snapshot } = loadLearningProgress(tasks);
   const blocks = getTypeScriptBlocks(tasks, snapshot);
   const available = blocks.filter((block) => block.tasks.length > 0);
-  const upcoming = blocks.filter((block) => block.tasks.length === 0);
+  const primary = available.filter((block) => primaryTypeScriptSectionIds.has(block.id));
+  const upcoming = available.filter((block) => !primaryTypeScriptSectionIds.has(block.id));
   const selected = available.find((block) => block.id === selectedId) ?? available[0];
   const repeatTasks = getBlockRepeatTasks(selected?.tasks ?? []);
   const practice = getBlockPractice(selected?.tasks ?? [], snapshot);
@@ -58,11 +59,13 @@ export default function TypeScriptOverview({ language, onStart }: Props) {
       onContinue={() => { if (practice.tasks[0]) onStart(practice.tasks, practice.tasks[0].id, count, selected.id, practice.repeat); }} />
       : <section className="trainingCard"><h3>{t.title}</h3><p>{t.noExercises}</p></section>}
     <div className="tsLearningOverview">
-      <LearningPath blocks={available} selectedBlockId={selected?.id ?? ''} onSelectBlock={setSelectedId} language={language} title={ui.path} />
+      <LearningPath blocks={primary} selectedBlockId={selected?.id ?? ''} onSelectBlock={setSelectedId} language={language} title={ui.path} />
       {upcoming.length > 0 && <details className="tsUpcoming"><summary aria-label={`${ui.later} · ${upcoming.length}`} title={`${ui.later} · ${upcoming.length}`}>
         <svg className="tsUpcomingArrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
       </summary>
-        <p>{t.noExercises}</p><ul>{upcoming.map((block) => <li key={block.id}>{block.title}</li>)}</ul>
+        <div className="tsUpcomingContent" tabIndex={0} role="region" aria-label={ui.later}>
+          <LearningPath blocks={upcoming} selectedBlockId={selected?.id ?? ''} onSelectBlock={setSelectedId} language={language} title={ui.later} startIndex={primary.length} headingId="additional-learning-path-title" />
+        </div>
       </details>}
     </div>
   </>;

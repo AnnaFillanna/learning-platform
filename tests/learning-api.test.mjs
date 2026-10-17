@@ -10,7 +10,7 @@ const { default: handler } = load("api/learning.ts");
 test("public catalog contains no solutions or hidden tests", () => {
   const response = handleLearning({ action: "catalog" });
   assert.equal(response.status, 200);
-  assert.equal(response.body.tasks.length, 18);
+  assert.equal(response.body.tasks.length, 36);
   for (const task of response.body.tasks) {
     assert.equal("solution" in task, false);
     assert.equal("hiddenTests" in task, false);
@@ -71,5 +71,5 @@ test("API returns controlled errors for malformed requests and methods", () => {
   assert.equal(status, 405);
   handler({ method: "POST", body: { action: "catalog" } }, res);
   assert.equal(status, 200);
-  assert.equal(body.tasks.length, 18);
+  assert.equal(body.tasks.length, 36);
 });

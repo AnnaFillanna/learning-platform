@@ -1,6 +1,8 @@
 import type { Task } from "../types/task.js";
 import type { LearningMetadata } from "../types/learning.js";
 
+import { typescriptExtraTasks } from "./typescriptExtraTasks.js";
+
 export const typescriptTasks: (Task & LearningMetadata)[] = [
   {
     "id": "ts-inferred-stock-001",
@@ -1552,5 +1554,6 @@ export const typescriptTasks: (Task & LearningMetadata)[] = [
       "strict": true,
       "target": "ES2022"
     }
-  }
+  },
+  ...typescriptExtraTasks,
 ];

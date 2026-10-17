@@ -11,7 +11,8 @@ test('each TS exercise belongs to exactly one ordered block', () => {
   const assigned = blocks.flatMap(block => block.tasks.map(task => task.id));
   assert.equal(assigned.length, tasks.length);
   assert.equal(new Set(assigned).size, tasks.length);
-  assert.ok(blocks.some(block => block.tasks.length === 0));
+  assert.equal(blocks.length, 26);
+  assert.ok(blocks.every(block => block.tasks.length > 0));
 });
 
 test('selected-block sessions never spill into another section', async () => {
@@ -52,4 +53,24 @@ test('manual repeat includes completed exercises even in a partially completed b
   assert.ok(await loader(1));
   assert.equal(partial.completedTaskIds.length, 1);
   assert.ok(repeatTasks.every(task => task.stage !== 'delayed-repetition'));
+});
+
+test('all 18 additional sections offer selectable practice and repeat without changing progress', async () => {
+  const { primaryTypeScriptSectionIds } = load('src/learning/typescriptBlocks.ts');
+  const blocks = getTypeScriptBlocks(tasks, snapshot);
+  assert.equal(blocks.filter(block => primaryTypeScriptSectionIds.has(block.id)).length, 8);
+  const additional = blocks.filter(block => !primaryTypeScriptSectionIds.has(block.id));
+  assert.equal(additional.length, 18);
+  for (const block of additional) {
+    assert.ok(block.tasks.length >= 1, block.id);
+    const practice = getBlockPractice(block.tasks, snapshot);
+    assert.equal(practice.repeat, false, block.id);
+    const loader = createLearningLoader(practice.tasks, () => snapshot, practice.tasks[0].id);
+    assert.equal((await loader(0)).id, block.tasks[0].id, block.id);
+    const done = { ...snapshot, completedTaskIds: block.tasks.map(task => task.id) };
+    const repeat = getBlockPractice(block.tasks, done);
+    assert.equal(repeat.repeat, true, block.id);
+    assert.equal(repeat.tasks.length, block.tasks.length, block.id);
+    assert.equal(done.completedTaskIds.length, block.tasks.length, block.id);
+  }
 });

@@ -14,6 +14,9 @@ const descriptions: Record<string, LearningBlock['description']> = {
   'ts-section-application': { ru: 'Моделирование данных и практические задачи', de: 'Datenmodellierung und praktische Aufgaben', en: 'Data modelling and practical exercises' },
 };
 
+// Keep the original eight sections above the expandable practice list.
+export const primaryTypeScriptSectionIds = new Set(Object.keys(descriptions));
+
 export function getTypeScriptBlocks(tasks: readonly LearnerTask[], snapshot: LearningSnapshot): (LearningBlock & { tasks: LearnerTask[] })[] {
   const map = skillRegistry.forLanguage('typescript');
   return [...map.sections].sort((a, b) => a.order - b.order).map((section) => {
